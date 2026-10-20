@@ -2,9 +2,9 @@
 -- ║  NEOTERIC LP — v2 · PART 2 of 2 · SEED DATA FROM v1                     ║
 -- ║                                                                           ║
 -- ║  This is `migrations/0001_init.sql` split in two, for pasting into the     ║
--- ║  Supabase SQL editor without a 1,100-line paste. Run part 1, then part 2.  ║
+-- ║  Supabase SQL editor without one very long paste. Run part 1, then 2.      ║
 -- ║  The combined file is identical and is the canonical artifact — use it     ║
--- ║  with psql:  psql "$DATABASE_URL" -f migrations/0001_init.sql              ║
+-- ║  with psql:  psql "$DATABASE_URL" -1 -f migrations/0001_init.sql           ║
 -- ╚═══════════════════════════════════════════════════════════════════════════╝
 
 -- Requires part 1 to have been run first.

@@ -71,6 +71,28 @@ verified by running each path against PostgreSQL 16 and comparing row counts.
 **3. Supabase SQL editor, combined file.** Works, but paste it in one go and
 check the editor received all 1,179 lines before running.
 
+### If the API says `permission denied for table ...`
+
+```
+permission denied for table admin_users          (code 42501)
+```
+
+The tables exist but the role cannot touch them. On Supabase, `service_role`
+bypasses RLS yet is still subject to ordinary table privileges, so every query
+fails until they are granted. Apply the standalone fix — it changes no data and
+is safe to re-run:
+
+```bash
+psql "$DATABASE_URL" -f migrations/0002_fix_privileges.sql
+```
+
+or paste that file into the SQL editor. `0001_init.sql` now contains the same
+grants (section 11b), so a fresh install does not need it.
+
+The server reports this distinctly at boot rather than leaving you to read a
+scheduler stack trace: it tells apart "schema missing" (42P01) from
+"privileges missing" (42501) and prints the command that fixes each.
+
 ### If you hit a syntax error on a word from the article text
 
 An error like `relation "enforceable" does not exist`, or `syntax error at or

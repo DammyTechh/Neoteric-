@@ -3,6 +3,7 @@ import { createApp } from './app';
 import { container } from '@infrastructure/container';
 import { env, isProduction } from '@shared/config/env';
 import { logger } from '@shared/logger';
+import { supabase } from '@infrastructure/database/supabase.client';
 
 /**
  * Process entry point: boot checks, scheduler, graceful shutdown.
@@ -24,8 +25,76 @@ let shuttingDown = false;
  * not stop the site serving its publications, and it is better to start and
  * report the problem loudly than to crash-loop in a way nobody can inspect.
  */
+interface DatabaseReport {
+  ok: boolean;
+  message: string;
+  remedy: string;
+  detail?: string;
+}
+
+/**
+ * Distinguishes the ways the database can be wrong at boot.
+ *
+ * Postgres error codes already carry the distinction: `42P01` means the table
+ * is not there (the migration never ran), `42501` means it is there but this
+ * role may not touch it (privileges missing). Collapsing those into one
+ * "database error" is what sends people hunting in the wrong place — and
+ * `service_role` on Supabase bypasses RLS while still needing table GRANTs,
+ * so `42501` is a genuinely easy trap.
+ */
+async function inspectDatabase(): Promise<DatabaseReport> {
+  const { error } = await supabase.from('site_settings').select('key').limit(1);
+
+  if (!error) return { ok: true, message: 'database reachable', remedy: '' };
+
+  const code = (error as { code?: string }).code;
+
+  if (code === '42P01') {
+    return {
+      ok: false,
+      message: 'The database schema is missing — the migration has not been run.',
+      remedy: 'Run:  psql "$DATABASE_URL" -1 -f migrations/0001_init.sql',
+      detail: error.message,
+    };
+  }
+
+  if (code === '42501') {
+    return {
+      ok: false,
+      message: 'The schema exists, but this role cannot read it — table privileges are missing.',
+      remedy:
+        'Re-run the migration, which now grants them, or apply section 11b of ' +
+        'migrations/0001_init.sql on its own.',
+      detail: error.message,
+    };
+  }
+
+  return {
+    ok: false,
+    message: 'The database could not be reached.',
+    remedy: 'Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your .env.',
+    detail: error.message,
+  };
+}
+
 async function runStartupChecks(): Promise<void> {
   const { storage, mailer } = container.services;
+
+  /**
+   * The database comes first, and its failures are named explicitly.
+   *
+   * Without this the first sign of trouble was a stack trace from the
+   * scheduler sixty seconds in, which says nothing about the actual cause.
+   * The two failures worth telling apart are "I cannot reach the database"
+   * and "I can reach it but the schema is not there / I lack privileges" —
+   * they have completely different fixes.
+   */
+  const database = await inspectDatabase();
+
+  if (!database.ok) {
+    logger.error({ detail: database.detail }, database.message);
+    logger.error(database.remedy);
+  }
 
   const [bucket, smtp] = await Promise.allSettled([
     storage.ensureBucket(),
