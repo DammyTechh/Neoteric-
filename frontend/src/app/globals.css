@@ -1,0 +1,339 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Base
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    --shell-gutter: 1.5rem;
+    color-scheme: light;
+  }
+
+  html {
+    @apply scroll-smooth antialiased;
+    /* The sticky header must not cover the heading an anchor jumps to. */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-surface text-ink font-sans text-base;
+    text-rendering: optimizeLegibility;
+  }
+
+  /*
+   * Restraint, per the brief: 400 for text, 600 for headings. No 700, no
+   * mixing of weights within a block. Most of the "clean" look comes from
+   * not reaching for extra weights to create hierarchy that size and space
+   * already provide.
+   */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-ink;
+    font-weight: 600;
+  }
+
+  h1 { @apply text-h1; }
+  h2 { @apply text-h2; }
+  h3 { @apply text-h3; }
+  h4 { @apply text-h4; }
+  h5 { @apply text-h5; }
+  h6 { @apply text-h6; }
+
+  ::selection {
+    @apply bg-primary-200 text-primary-950;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-surface;
+  }
+
+  /* Respect the system setting rather than animating regardless. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Components
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@layer components {
+  /* The one container width, used by every section. */
+  .shell {
+    @apply w-full max-w-shell mx-auto;
+    padding-inline: var(--shell-gutter);
+  }
+
+  @screen md {
+    :root { --shell-gutter: 2rem; }
+  }
+
+  /* ── Icons ──────────────────────────────────────────────────────────────
+     Material Symbols Rounded. The variation settings are what keep the
+     weight matched to the text beside it; without them the icons look
+     heavier than the type and the whole thing goes slightly off.          */
+  .icon {
+    font-family: 'Material Symbols Rounded', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    font-size: 20px;
+    user-select: none;
+  }
+
+  .icon-filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .icon-sm { font-size: 16px; }
+  .icon-lg { font-size: 24px; }
+  .icon-xl { font-size: 32px; }
+
+  /* Monospace is for codes, references and figures — never running text. */
+  .mono {
+    @apply font-mono;
+    font-feature-settings: 'tnum' 1, 'zero' 1;
+  }
+
+  /* ── Depth ──────────────────────────────────────────────────────────────
+     A card that behaves like a physical object: it sits on the surface at
+     rest, and lifts toward the reader on hover. The translate is small on
+     purpose — 4px reads as a response, 12px reads as a toy.               */
+  .card {
+    @apply bg-surface-raised rounded-card shadow-rest
+           transition-[transform,box-shadow] duration-300 ease-physical
+           border border-surface-line;
+  }
+
+  .card-interactive {
+    @apply card hover:shadow-lift hover:-translate-y-1 focus-within:shadow-lift
+           focus-within:-translate-y-1;
+  }
+
+  /*
+   * Tilt. The parent establishes the perspective; the child rotates within
+   * it. Perspective on the element itself would make every card tilt around
+   * the page's centre rather than its own, which looks wrong the moment
+   * there is more than one of them.
+   */
+  .tilt-scene {
+    perspective: 1200px;
+    perspective-origin: center;
+  }
+
+  .tilt {
+    @apply transition-transform duration-500 ease-physical;
+    transform-style: preserve-3d;
+  }
+
+  .tilt-scene:hover .tilt {
+    transform: rotateX(2deg) rotateY(-3deg) translateZ(14px);
+  }
+
+  /* An inner layer that lifts slightly more than its card, for parallax. */
+  .tilt-layer {
+    @apply transition-transform duration-500 ease-physical;
+    transform: translateZ(0);
+  }
+
+  .tilt-scene:hover .tilt-layer {
+    transform: translateZ(30px);
+  }
+
+  /* ── Stacked sections ───────────────────────────────────────────────────
+     Each section sticks while the next slides over it, so the page reads as
+     a deck of panels rather than a scroll of blocks. The scale-down on the
+     outgoing panel is what sells the depth.                               */
+  .stack-section {
+    @apply sticky top-0 min-h-screen flex items-center;
+  }
+
+  .stack-card {
+    @apply w-full bg-surface rounded-panel shadow-deep overflow-hidden
+           border border-surface-line;
+  }
+
+  /* ── Surfaces ───────────────────────────────────────────────────────────  */
+  .panel-dark {
+    @apply bg-primary-950 text-white shadow-inset;
+  }
+
+  /* The brand mark as a watermark, as v1 used it on its dark panels. */
+  .panel-dark-mark {
+    @apply panel-dark;
+    background-image: url('/images/neoteric-icon.svg');
+    background-repeat: no-repeat;
+    background-position: center right -4rem;
+    background-size: auto 150%;
+  }
+
+  .eyebrow {
+    @apply text-caption uppercase tracking-[0.14em] font-medium text-secondary;
+  }
+
+  .rule-bronze {
+    @apply h-[3px] w-12 bg-secondary rounded-full;
+  }
+
+  /* ── Controls ───────────────────────────────────────────────────────────  */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg
+           px-6 py-3 text-base font-medium
+           transition-[transform,box-shadow,background-color] duration-200 ease-physical
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white shadow-float
+           hover:bg-primary-600 hover:shadow-lift hover:-translate-y-0.5
+           active:translate-y-0 active:shadow-rest;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary text-white shadow-float
+           hover:bg-secondary-500 hover:shadow-lift hover:-translate-y-0.5
+           active:translate-y-0 active:shadow-rest;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-primary border border-surface-line
+           hover:border-primary-300 hover:bg-primary-50;
+  }
+
+  .btn-sm { @apply px-4 py-2 text-small; }
+
+  .field {
+    @apply w-full rounded-lg border border-surface-line bg-surface px-4 py-3
+           text-base text-ink placeholder:text-ink-soft
+           transition-[border-color,box-shadow] duration-200
+           focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:outline-none;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-surface-line
+           px-4 py-2 text-small transition-colors duration-200
+           hover:border-primary-300 hover:text-primary;
+  }
+
+  .chip-active {
+    @apply bg-primary text-white border-primary hover:text-white;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Utilities
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  /* Fades the bottom of a cropped portrait into the surface behind it —
+     carried over from v1's .mask-team. */
+  .mask-fade-bottom {
+    mask-image: linear-gradient(to top, transparent 0%, black 45%);
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 45%);
+  }
+
+  .mask-fade-right {
+    mask-image: linear-gradient(to right, transparent 0%, black 55%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 55%);
+  }
+
+  /* A faint grid, for dark panels that would otherwise read as flat ink. */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+
+  /* Hides a scrollbar without disabling the scrolling itself. */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Article body
+   The one place long-form HTML from the editor is rendered, so its typography
+   is set here rather than scattered through the component.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.article-body {
+  @apply text-lead text-ink/90;
+}
+
+.article-body > * + * { margin-top: 1.5rem; }
+
+.article-body h2 {
+  @apply text-h3 mt-12 mb-0 scroll-mt-28;
+}
+
+.article-body h3 {
+  @apply text-h4 mt-8 mb-0 scroll-mt-28;
+}
+
+.article-body h4 {
+  @apply text-h5 mt-6 mb-0;
+}
+
+.article-body p { @apply text-pretty; }
+
+.article-body a {
+  @apply text-primary underline decoration-primary-300 underline-offset-4
+         hover:decoration-primary transition-colors;
+}
+
+.article-body ul { @apply list-disc pl-6 space-y-2; }
+.article-body ol { @apply list-decimal pl-6 space-y-2; }
+.article-body li > * + * { margin-top: 0.75rem; }
+
+.article-body blockquote {
+  @apply border-l-[3px] border-secondary bg-secondary-50 rounded-r-card
+         py-4 pl-6 pr-4 italic text-ink;
+}
+
+.article-body img {
+  @apply rounded-card shadow-float w-full h-auto my-8;
+}
+
+.article-body figure { @apply my-8; }
+.article-body figcaption { @apply text-small text-ink-muted mt-3 text-center; }
+
+.article-body table {
+  @apply w-full border-collapse text-small my-8 block overflow-x-auto;
+}
+
+.article-body th {
+  @apply bg-surface-sunken text-left font-semibold px-4 py-3
+         border border-surface-line whitespace-nowrap;
+}
+
+.article-body td {
+  @apply px-4 py-3 border border-surface-line align-top;
+}
+
+.article-body code {
+  @apply mono text-small bg-surface-sunken px-1.5 py-0.5 rounded;
+}
+
+.article-body pre {
+  @apply mono text-small bg-primary-950 text-primary-100 rounded-card p-6 overflow-x-auto;
+}
+
+.article-body pre code { @apply bg-transparent p-0; }
+
+.article-body hr { @apply border-0 border-t border-surface-line my-12; }

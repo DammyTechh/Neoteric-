@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+
+    /**
+     * `node16` for both, rather than CommonJS + node10.
+     *
+     * package.json has no `"type": "module"`, so the emit is still CommonJS —
+     * but node10 resolution is deprecated and errors outright under
+     * TypeScript 6, which is what npm now resolves for `^5`. This pair is
+     * accepted by 5.x and 6.x alike.
+     */
+    "module": "node16",
+    "moduleResolution": "node16",
+
+    "rootDir": "src",
+    "outDir": "dist",
+
+    /**
+     * Path aliases without `baseUrl`, which is also deprecated. Each mapping
+     * is relative to this file, and `tsc-alias` rewrites them at build time
+     * so the emitted JavaScript has real relative requires.
+     */
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@domain/*": ["./src/domain/*"],
+      "@application/*": ["./src/application/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@presentation/*": ["./src/presentation/*"]
+    },
+
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": false,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "declaration": false,
+    "removeComments": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
