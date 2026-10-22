@@ -54,12 +54,13 @@ export function Footer({ settings }: { settings: SiteSettings }) {
             <h2 className="eyebrow mb-6">Explore</h2>
             <ul className="space-y-3">
               {[
-                { label: 'What we do', href: '/#about' },
-                { label: 'Practice areas', href: '/#practice-areas' },
-                { label: 'Vision & mission', href: '/#vision' },
-                { label: 'Our team', href: '/#team' },
+                { label: 'What we do', href: '/#aboutUs' },
+                { label: 'Achievements', href: '/#achievements' },
+                { label: 'Practice areas', href: '/#practiceAreas' },
+                { label: 'Our Vision & Mission', href: '/#visionMission' },
+                { label: 'Our Team', href: '/#ourTeam' },
                 { label: 'News & Publications', href: '/publications' },
-                { label: 'Contact', href: '/#contact' },
+                { label: 'Contact us', href: '/#contactUs' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

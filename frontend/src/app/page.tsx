@@ -1,12 +1,12 @@
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { HeroCarousel } from '@/components/home/HeroCarousel';
+import { WhoWeAreSection } from '@/components/home/WhoWeAre';
+import { PracticeAreasSection } from '@/components/home/PracticeAreas';
+import { TeamSection } from '@/components/home/Team';
 import {
-  AboutSection,
   AchievementsBand,
-  PracticeAreasSection,
   PublicationsSection,
-  TeamSection,
   VisionMissionSection,
 } from '@/components/home/Sections';
 import { TestimonialsSection } from '@/components/home/Testimonials';
@@ -38,15 +38,14 @@ export default async function HomePage() {
   });
 
   /**
-   * Section order follows the live v1 site, so returning visitors land
-   * somewhere familiar:
+   * Section order and anchors follow the live v1 site, so the navigation
+   * means the same thing it always did:
    *
-   *   hero (industries carousel) → achievements → who we are →
-   *   practice areas → our team → vision & mission → news → contact
+   *   hero (industries carousel) → #achievements → #aboutUs ("Who We Are")
+   *   → #practiceAreas → #ourTeam → #visionMission → #news → #contactUs
    *
-   * Industries deliberately have no section of their own: the hero carousel
-   * is the industries showcase, exactly as in v1, and a grid underneath would
-   * repeat the same eleven items a screen later.
+   * Industries have no section of their own: the hero carousel is the
+   * industries showcase, exactly as in v1.
    */
   return (
     <>
@@ -55,7 +54,7 @@ export default async function HomePage() {
       <main id="main">
         <HeroCarousel industries={data.industries} settings={data.settings} />
         <AchievementsBand achievements={data.achievements} />
-        <AboutSection settings={data.settings} />
+        <WhoWeAreSection settings={data.settings} />
         <PracticeAreasSection practiceAreas={data.practiceAreas} />
         <TeamSection team={data.team} />
         <VisionMissionSection settings={data.settings} />

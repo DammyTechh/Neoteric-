@@ -7,13 +7,20 @@ import { Icon } from '@/components/ui/Icon';
 import { Logo } from '@/components/ui/Logo';
 import { cn } from '@/lib/cn';
 
-/** Mirrors v1's navigation, with Publications promoted to its own page. */
+/**
+ * The navigation, with v1's exact labels and order.
+ *
+ * Taken from the live site rather than paraphrased: returning visitors look
+ * for "Our Vision & Mission", not "Vision". "News" points at the publications
+ * page, which is the one thing v2 moved off the homepage.
+ */
 const NAV_LINKS = [
-  { label: 'What we do', href: '/#about' },
-  { label: 'Practice areas', href: '/#practice-areas' },
-  { label: 'Our team', href: '/#team' },
-  { label: 'Vision & mission', href: '/#vision' },
-  { label: 'Publications', href: '/publications' },
+  { label: 'What we do', href: '/#aboutUs' },
+  { label: 'Achievements', href: '/#achievements' },
+  { label: 'Our Vision & Mission', href: '/#visionMission' },
+  { label: 'News', href: '/publications' },
+  { label: 'Our Team', href: '/#ourTeam' },
+  { label: 'Contact us', href: '/#contactUs' },
 ] as const;
 
 /**

@@ -37,7 +37,7 @@ export function ContactSection({
   ].filter((item) => item.value);
 
   return (
-    <section id="contact" className="bg-surface-sunken py-section scroll-mt-24">
+    <section id="contactUs" className="bg-surface-sunken py-section scroll-mt-24">
       <div className="shell">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
