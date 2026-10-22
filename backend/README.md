@@ -71,6 +71,21 @@ verified by running each path against PostgreSQL 16 and comparing row counts.
 **3. Supabase SQL editor, combined file.** Works, but paste it in one go and
 check the editor received all 1,179 lines before running.
 
+### Updating seeded content after the first install
+
+`0001_init.sql` seeds settings with `ON CONFLICT (key) DO NOTHING`. That is
+correct for a seed — re-running it must never overwrite copy the firm has
+since edited — but it also means re-running cannot *correct* a row. A content
+fix therefore needs its own migration that says so:
+
+```bash
+psql "$DATABASE_URL" -f migrations/0003_update_about_content.sql
+```
+
+`0003` sets the full four-paragraph "Who We Are" text and the four images that
+go with it. Safe to re-run; it touches three `site_settings` rows and nothing
+else.
+
 ### If the API says `permission denied for table ...`
 
 ```
@@ -143,6 +158,31 @@ Re-running it reports the existing account rather than overwriting it.
 
 ---
 
+## Bringing the v1 articles across from Drive
+
+The 27 publications migrated from v1 arrive with a `source_url` and no body,
+so the article page has nothing to render. This pulls each document down,
+converts it, and stores it as article HTML:
+
+```bash
+npm run db:import-drive            # import everything still empty
+npm run db:import-drive -- --dry   # report what it would do, change nothing
+npm run db:import-drive -- --slug=ai-governance-why-should-you-care
+```
+
+It only ever fills an **empty** body, so it is safe to re-run and cannot
+overwrite an article someone has since edited in the dashboard.
+
+Each document must be shared as *anyone with the link can view*. Anything
+still restricted is listed at the end with the reason; fix the sharing in
+Drive and run it again.
+
+Google Docs convert cleanly to editable HTML. A **PDF** cannot be converted
+faithfully — it describes glyph positions, not headings — so those are
+reported and should be uploaded through the dashboard instead, where the
+article page renders them in an inline reader. Either way the reader stays on
+the site.
+
 ## Scripts
 
 | | |
@@ -154,6 +194,7 @@ Re-running it reports the existing account rather than overwriting it.
 | `npm run lint` | ESLint |
 | `npm run db:migrate` | Apply the migration |
 | `npm run db:seed:admin` | Create the administrator |
+| `npm run db:import-drive` | Pull the v1 articles down from Google Drive |
 | `npm run openapi:export` | Write `openapi.json` for Postman or client generation |
 | `npm run mail:preview` | Render all 13 email templates to `.mail-preview/` |
 

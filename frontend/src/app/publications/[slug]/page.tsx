@@ -9,6 +9,7 @@ import { Thumbnail } from '@/components/publications/Thumbnail';
 import { PublicationCard } from '@/components/publications/PublicationCard';
 import { DocumentViewer } from '@/components/publications/DocumentViewer';
 import { NewsletterForm } from '@/components/forms/NewsletterForm';
+import { BreadcrumbSchema } from '@/components/seo/StructuredData';
 import { apiGet, apiGetSafe, ApiError } from '@/lib/api';
 import { formatDate } from '@/lib/format';
 import type { PublicationDetail, SiteSettings } from '@/lib/types';
@@ -83,6 +84,26 @@ export default async function ArticlePage({ params }: { params: { slug: string }
     datePublished: publication.publishedAt ?? undefined,
     dateModified: publication.updatedAt,
     author: { '@type': 'Organization', name: publication.authorName },
+    /*
+     * `articleBody` and `wordCount` are what an assistant reads when it is
+     * deciding whether this piece answers a question — without them it only
+     * sees a headline. `keywords` and `articleSection` give it the subject.
+     */
+    ...(publication.body
+      ? {
+          articleBody: publication.body.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(),
+          wordCount: publication.body.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length,
+        }
+      : {}),
+    ...(publication.tags.length > 0 ? { keywords: publication.tags.join(', ') } : {}),
+    ...(publication.category ? { articleSection: publication.category.name } : {}),
+    inLanguage: 'en-NG',
+    isAccessibleForFree: true,
+    timeRequired: `PT${publication.readingMinutes}M`,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.neotericlp.com.ng'}/publications/${publication.slug}`,
+    },
     publisher: {
       '@type': 'LegalService',
       name: 'Neoteric LP',
@@ -103,8 +124,15 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <BreadcrumbSchema
+        trail={[
+          { name: 'Home', path: '/' },
+          { name: 'News & Publications', path: '/publications' },
+          { name: publication.title, path: `/publications/${publication.slug}` },
+        ]}
+      />
 
-      <main id="main" className="pt-16 md:pt-20">
+      <main id="main" className="pt-20 md:pt-24">
         {/* ── Masthead ─────────────────────────────────────────────────── */}
         <header className="relative overflow-hidden bg-primary-950 text-white">
           <div className="absolute inset-0 bg-grid" aria-hidden="true" />

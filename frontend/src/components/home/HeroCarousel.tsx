@@ -201,8 +201,13 @@ export function HeroCarousel({
       </div>
 
       {/* ── Controls ─────────────────────────────────────────────────────── */}
+      {/*
+        The achievements band below is pulled up over the hero by -3rem, so the
+        controls reserve more than that in bottom padding. Without it the arrows
+        sit underneath the first stat card on desktop.
+      */}
       <div className="absolute inset-x-0 bottom-0 z-10">
-        <div className="shell pb-8">
+        <div className="shell pb-20 md:pb-24">
           <div className="flex items-end justify-between gap-6">
             {/* The rail: one tick per industry, the active one widened and
                 carrying its own progress. Readable at a glance as "4 of 11". */}

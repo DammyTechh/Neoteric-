@@ -54,9 +54,20 @@ export function TeamSection({ team }: { team: TeamMember[] }) {
 
 function TeamGrid({ members, startDelay }: { members: TeamMember[]; startDelay: number }) {
   return (
-    <div className="mt-12 grid grid-cols-2 gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+    /*
+     * Flex rather than grid, specifically so a short last row centres.
+     * CSS grid pins every item to a column track, which left the final two
+     * portraits hanging off to the left. Flex with `justify-center` and an
+     * explicit basis gives the same 2 / 3 / 4 columns and centres whatever
+     * is left over.
+     */
+    <div className="mt-12 flex flex-wrap justify-center gap-5 md:gap-6">
       {members.map((member, index) => (
-        <Reveal key={member.id} delay={startDelay + Math.min(index * 0.06, 0.36)}>
+        <Reveal
+          key={member.id}
+          delay={startDelay + Math.min(index * 0.06, 0.36)}
+          className="basis-[calc(50%-0.625rem)] md:basis-[calc(33.333%-1rem)] lg:basis-[calc(25%-1.125rem)]"
+        >
           <TiltCard intensity={2} className="h-full">
             <article
               className={cn(

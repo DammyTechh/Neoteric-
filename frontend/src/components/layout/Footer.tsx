@@ -35,7 +35,7 @@ export function Footer({ settings }: { settings: SiteSettings }) {
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-5">
             <Link href="/" className="inline-block mb-6">
-              <Logo variant="light" className="h-8 w-auto" />
+              <Logo variant="light" className="h-11 w-auto" />
             </Link>
 
             <p className="text-primary-200 max-w-sm text-pretty">

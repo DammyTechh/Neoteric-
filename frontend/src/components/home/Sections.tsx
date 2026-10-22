@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
+import { TiltCard } from '@/components/ui/Card';
 import { PublicationCard } from '@/components/publications/PublicationCard';
 import { cn } from '@/lib/cn';
 import type {
@@ -81,41 +82,92 @@ export function VisionMissionSection({ settings }: { settings: SiteSettings }) {
 
   if (!vision && !mission) return null;
 
+  const panels = [
+    { title: 'Our vision', body: vision, icon: 'visibility', accent: 'primary' as const },
+    { title: 'Our mission', body: mission, icon: 'flag', accent: 'secondary' as const },
+  ].filter((panel) => panel.body);
+
+  /**
+   * Two white cards on a light ground.
+   *
+   * The previous version put this on the dark panel with the brand mark as a
+   * background image. At the width of a full-bleed section that mark scaled up
+   * until it ran straight through the mission copy — it works on a narrow
+   * column, not here. White cards keep the text the brightest thing on the
+   * screen, which is what a statement of intent should be, and the depth comes
+   * from the cards themselves rather than from anything behind the words.
+   */
   return (
-    <section id="visionMission" className="shell py-section scroll-mt-24">
-      <Reveal>
-        <div className="relative overflow-hidden rounded-panel panel-dark-mark">
-          <div className="absolute inset-0 bg-grid" aria-hidden="true" />
-          <div
-            className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full opacity-25 blur-3xl"
-            style={{ background: 'radial-gradient(circle, #c19766, transparent 70%)' }}
-            aria-hidden="true"
-          />
-
-          <div className="relative p-8 md:p-16">
-            <p className="eyebrow mb-10">Vision & mission</p>
-
-            <div className="grid gap-12 md:grid-cols-2 md:gap-16">
-              {[
-                { title: 'Our vision', body: vision, icon: 'visibility' },
-                { title: 'Our mission', body: mission, icon: 'flag' },
-              ]
-                .filter((item) => item.body)
-                .map((item, index) => (
-                  <Reveal key={item.title} delay={index * 0.12}>
-                    <div>
-                      <span className="grid h-12 w-12 place-items-center rounded-lg bg-white/10 text-secondary mb-6">
-                        <Icon name={item.icon} size="lg" />
-                      </span>
-                      <h3 className="text-h4 text-white mb-4">{item.title}</h3>
-                      <p className="text-primary-200 text-pretty">{item.body}</p>
-                    </div>
-                  </Reveal>
-                ))}
-            </div>
+    <section id="visionMission" className="py-section scroll-mt-24" aria-labelledby="vision-heading">
+      <div className="shell">
+        <Reveal>
+          <div className="text-center">
+            <h2 id="vision-heading" className="text-balance">Vision &amp; Mission</h2>
+            <div className="rule-bronze mx-auto mt-6" />
           </div>
+        </Reveal>
+
+        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:gap-8">
+          {panels.map((panel, index) => (
+            <Reveal key={panel.title} delay={index * 0.12}>
+              <div className="group relative h-full">
+                {/* The offset plate that gives the card its depth. */}
+                <div
+                  className={cn(
+                    'absolute inset-0 rounded-panel transition-transform duration-700 ease-physical',
+                    panel.accent === 'primary' ? 'bg-primary/15' : 'bg-secondary/25',
+                    'group-hover:translate-x-0 group-hover:translate-y-0',
+                  )}
+                  style={{
+                    transform:
+                      index === 0
+                        ? 'rotate(-1.5deg) translate(-10px, 12px)'
+                        : 'rotate(1.5deg) translate(10px, 12px)',
+                  }}
+                  aria-hidden="true"
+                />
+
+                <TiltCard intensity={1.5} className="h-full">
+                  <article className="relative h-full overflow-hidden rounded-panel border border-surface-line bg-surface p-8 shadow-deep md:p-10">
+                    {/* A quiet corner arc in the accent, well clear of the text. */}
+                    <svg
+                      className={cn(
+                        'pointer-events-none absolute -right-12 -top-12 h-44 w-44',
+                        panel.accent === 'primary' ? 'text-primary' : 'text-secondary',
+                      )}
+                      viewBox="0 0 100 100"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <circle cx="50" cy="50" r="46" stroke="currentColor" strokeWidth="0.7" opacity="0.18" />
+                      <circle cx="50" cy="50" r="34" stroke="currentColor" strokeWidth="0.7" opacity="0.14" />
+                      <circle cx="50" cy="50" r="22" stroke="currentColor" strokeWidth="0.7" opacity="0.10" />
+                    </svg>
+
+                    <span
+                      className={cn(
+                        'relative grid h-14 w-14 place-items-center rounded-card shadow-float',
+                        'transition-transform duration-500 ease-physical group-hover:-translate-y-1',
+                        panel.accent === 'primary'
+                          ? 'bg-primary text-white'
+                          : 'bg-secondary text-white',
+                      )}
+                    >
+                      <Icon name={panel.icon} size="lg" />
+                    </span>
+
+                    <h3 className="relative mt-7 text-h4 font-semibold text-ink">{panel.title}</h3>
+
+                    <p className="relative mt-4 text-lead text-ink-muted text-pretty">
+                      {panel.body}
+                    </p>
+                  </article>
+                </TiltCard>
+              </div>
+            </Reveal>
+          ))}
         </div>
-      </Reveal>
+      </div>
     </section>
   );
 }

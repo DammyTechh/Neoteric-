@@ -34,7 +34,15 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@Neoteric_LP',
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
+  alternates: {
+    canonical: '/',
+    types: { 'application/rss+xml': '/feed.xml' },
+  },
 };
 
 export const viewport: Viewport = {

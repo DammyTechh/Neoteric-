@@ -69,7 +69,7 @@ export function Header() {
             : 'bg-transparent',
         )}
       >
-        <div className="shell flex h-16 md:h-20 items-center justify-between gap-6">
+        <div className="shell flex h-20 md:h-24 items-center justify-between gap-6">
           <Link
             href="/"
             className="shrink-0"
@@ -78,17 +78,20 @@ export function Header() {
             <Logo
               variant={solid ? 'dark' : 'light'}
               priority
-              className="h-7 md:h-8 w-auto"
+              className="h-10 md:h-12 w-auto"
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-8" aria-label="Main">
+          <nav className="hidden lg:flex items-center gap-7 xl:gap-9" aria-label="Main">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'text-small font-medium transition-colors duration-300 relative group',
+                  // Sized to match body copy rather than UI chrome. At 13px
+                  // the navigation read as a toolbar; at 15px it reads as part
+                  // of the page, which is what a firm's masthead should do.
+                  'text-base font-medium transition-colors duration-300 relative group',
                   solid ? 'text-ink-muted hover:text-primary' : 'text-white/80 hover:text-white',
                 )}
               >
@@ -108,7 +111,7 @@ export function Header() {
             <Link
               href="/#contact"
               className={cn(
-                'hidden sm:inline-flex btn btn-sm',
+                'hidden sm:inline-flex btn text-base px-5 py-2.5',
                 solid
                   ? 'bg-primary text-white shadow-float hover:shadow-lift hover:-translate-y-0.5'
                   : 'bg-white/15 text-white backdrop-blur-sm border border-white/25 hover:bg-white/25',
@@ -139,7 +142,7 @@ export function Header() {
       <div
         id="mobile-menu"
         className={cn(
-          'fixed inset-x-0 top-16 z-40 lg:hidden transition-all duration-400 ease-physical',
+          'fixed inset-x-0 top-20 md:top-24 z-40 lg:hidden transition-all duration-400 ease-physical',
           menuOpen
             ? 'opacity-100 translate-y-0 pointer-events-auto'
             : 'opacity-0 -translate-y-4 pointer-events-none',

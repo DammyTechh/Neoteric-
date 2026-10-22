@@ -63,6 +63,33 @@ the brand teal rather than black. Cards tilt toward the cursor at a 2° ceiling;
 the hero's industry images hold a slow Ken Burns push. Everything is gated
 behind `prefers-reduced-motion`.
 
+## Search engine & AI discoverability
+
+| Route | |
+|---|---|
+| `/sitemap.xml` | Generated from the database — every published article, category and homepage section, with real `lastModified` dates |
+| `/robots.txt` | Allows the AI crawlers by name (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, OAI-SearchBot, CCBot…), disallows `/admin` |
+| `/feed.xml` | RSS of the 50 most recent publications |
+
+Structured data (JSON-LD):
+
+- **Homepage** — `LegalService` + `Organization` carrying the address, phone,
+  socials, all 13 practice areas as an `OfferCatalog` and the team as
+  `employee`. This is what gets the firm surfaced for *"maritime lawyer
+  Abuja"* rather than only for its own name. Plus `WebSite` with a
+  `SearchAction`, which is what earns a sitelinks search box.
+- **Publications index** — `CollectionPage` wrapping an `ItemList` of every
+  article, so a crawler sees all of them from one page.
+- **Article** — `Article` with `articleBody`, `wordCount`, `keywords`,
+  `articleSection`, `timeRequired` and `isAccessibleForFree`. The body text
+  matters: without it an assistant sees a headline and nothing to answer
+  from.
+- **Breadcrumbs** on both publication routes.
+
+The AI crawlers are allowed deliberately. A law firm's publications are
+written to be found and cited; being quotable by an assistant answering a
+question about Nigerian law is the modern version of ranking for it.
+
 ## Structure
 
 ```

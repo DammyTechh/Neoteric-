@@ -19,7 +19,8 @@
     "db:migrate": "tsx src/scripts/migrate.ts",
     "db:seed:admin": "tsx src/scripts/seed-admin.ts",
     "openapi:export": "tsx src/scripts/export-openapi.ts",
-    "mail:preview": "tsx src/scripts/preview-emails.ts"
+    "mail:preview": "tsx src/scripts/preview-emails.ts",
+    "db:import-drive": "tsx src/scripts/import-from-drive.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

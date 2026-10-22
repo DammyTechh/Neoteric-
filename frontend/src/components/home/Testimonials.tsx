@@ -26,7 +26,7 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
   return (
     <section className="py-section" aria-label="Client testimonials">
       <div className="shell">
-        <div className="relative overflow-hidden rounded-panel panel-dark-mark">
+        <div className="relative overflow-hidden rounded-panel panel-dark">
           <div className="absolute inset-0 bg-grid" aria-hidden="true" />
           <div
             className="pointer-events-none absolute -left-20 bottom-0 h-80 w-80 rounded-full opacity-20 blur-3xl"

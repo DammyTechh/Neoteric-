@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
 import { PublicationCard } from '@/components/publications/PublicationCard';
 import { PublicationSearch } from '@/components/publications/PublicationSearch';
+import { BreadcrumbSchema, PublicationListSchema } from '@/components/seo/StructuredData';
 import { apiGetSafe, apiGetList } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import type { Publication, PublicationCategory, SiteSettings, PaginationMeta } from '@/lib/types';
@@ -82,9 +83,17 @@ export default async function PublicationsPage({
 
   return (
     <>
+      <PublicationListSchema publications={items} />
+      <BreadcrumbSchema
+        trail={[
+          { name: 'Home', path: '/' },
+          { name: 'News & Publications', path: '/publications' },
+        ]}
+      />
+
       <Header />
 
-      <main id="main" className="pt-16 md:pt-20">
+      <main id="main" className="pt-20 md:pt-24">
         {/* ── Masthead ─────────────────────────────────────────────────── */}
         <header className="relative overflow-hidden bg-primary-950 text-white">
           <div className="absolute inset-0 bg-grid" aria-hidden="true" />
@@ -112,7 +121,7 @@ export default async function PublicationsPage({
 
         {/* ── Category rail ────────────────────────────────────────────── */}
         {categories.length > 0 && (
-          <div className="sticky top-16 md:top-20 z-30 border-b border-surface-line bg-surface/90 backdrop-blur-xl">
+          <div className="sticky top-20 md:top-24 z-30 border-b border-surface-line bg-surface/90 backdrop-blur-xl">
             <div className="shell">
               <nav
                 className="flex gap-2 overflow-x-auto py-4 no-scrollbar"
@@ -135,6 +144,15 @@ export default async function PublicationsPage({
                       searchParams.category === category.slug && 'chip-active',
                     )}
                   >
+                    {/* The category's colour lives in a small dot rather than
+                        in the label, so the rail stays legible. */}
+                    {category.colour && (
+                      <span
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ background: category.colour }}
+                        aria-hidden="true"
+                      />
+                    )}
                     {category.name}
                     {typeof category.publicationCount === 'number' && (
                       <span className="mono text-caption opacity-60">

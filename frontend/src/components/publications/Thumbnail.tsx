@@ -2,19 +2,26 @@ import Image from 'next/image';
 import { cn } from '@/lib/cn';
 
 /**
- * The palette a generated thumbnail draws from.
+ * The palette a generated cover draws from.
  *
- * All six are from the brand ramps — no new hues enter the design through the
- * back door just because a cover image is missing.
+ * Four values, all from the teal ramp, with the bronze used only for the
+ * lettering. The earlier version cycled six gradients including bronze and
+ * mid-teal grounds, which turned an index of legal commentary into a
+ * patchwork — the covers competed with each other and with the headlines
+ * they were supposed to support.
+ *
+ * These are deliberately close together. Across a twelve-card grid they read
+ * as one considered set rather than as decoration.
  */
 const COVER_THEMES = [
-  { from: '#255859', to: '#0e2425', ink: '#d7f0ed' },
-  { from: '#2d7374', to: '#213f40', ink: '#afe0dc' },
-  { from: '#c19766', to: '#764832', ink: '#f8f4ee' },
-  { from: '#3a9291', to: '#234b4c', ink: '#d7f0ed' },
-  { from: '#935f3b', to: '#56352d', ink: '#eee4d3' },
-  { from: '#54adab', to: '#255859', ink: '#f3faf9' },
+  { from: '#0e2425', to: '#061314' },
+  { from: '#213f40', to: '#0e2425' },
+  { from: '#234b4c', to: '#132829' },
+  { from: '#255859', to: '#163334' },
 ] as const;
+
+/** The bronze is the only accent, and only ever on the lettering. */
+const COVER_INK = '#c19766';
 
 /** Stable hash, so one article always gets the same generated cover. */
 function hashString(input: string): number {
@@ -96,29 +103,29 @@ export function Thumbnail({
       {/* Concentric rings, offset to the corner — a quiet motif rather than a
           picture of anything. */}
       <svg
-        className="absolute -right-10 -top-10 h-48 w-48 opacity-[0.17]"
+        className="absolute -right-10 -top-10 h-48 w-48 opacity-[0.10]"
         viewBox="0 0 100 100"
         fill="none"
         aria-hidden="true"
       >
-        <circle cx="50" cy="50" r="46" stroke={theme.ink} strokeWidth="0.6" />
-        <circle cx="50" cy="50" r="34" stroke={theme.ink} strokeWidth="0.6" />
-        <circle cx="50" cy="50" r="22" stroke={theme.ink} strokeWidth="0.6" />
-        <circle cx="50" cy="50" r="10" stroke={theme.ink} strokeWidth="0.6" />
+        <circle cx="50" cy="50" r="46" stroke={COVER_INK} strokeWidth="0.6" />
+        <circle cx="50" cy="50" r="34" stroke={COVER_INK} strokeWidth="0.6" />
+        <circle cx="50" cy="50" r="22" stroke={COVER_INK} strokeWidth="0.6" />
+        <circle cx="50" cy="50" r="10" stroke={COVER_INK} strokeWidth="0.6" />
       </svg>
 
       <div className="absolute inset-0 flex flex-col justify-between p-6">
         <span
-          className="mono text-[2.75rem] leading-none font-medium opacity-90"
-          style={{ color: theme.ink }}
+          className="mono text-[2.5rem] leading-none font-medium opacity-80"
+          style={{ color: COVER_INK }}
         >
           {initials || 'NL'}
         </span>
 
         {categoryName && (
           <span
-            className="text-caption uppercase tracking-[0.14em] font-medium opacity-80"
-            style={{ color: theme.ink }}
+            className="text-caption uppercase tracking-[0.14em] font-medium opacity-70"
+            style={{ color: COVER_INK }}
           >
             {categoryName}
           </span>

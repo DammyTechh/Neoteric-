@@ -15,7 +15,7 @@
   html {
     @apply scroll-smooth antialiased;
     /* The sticky header must not cover the heading an anchor jumps to. */
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 7rem;
   }
 
   body {
@@ -169,15 +169,6 @@
   /* ── Surfaces ───────────────────────────────────────────────────────────  */
   .panel-dark {
     @apply bg-primary-950 text-white shadow-inset;
-  }
-
-  /* The brand mark as a watermark, as v1 used it on its dark panels. */
-  .panel-dark-mark {
-    @apply panel-dark;
-    background-image: url('/images/neoteric-icon.svg');
-    background-repeat: no-repeat;
-    background-position: center right -4rem;
-    background-size: auto 150%;
   }
 
   .eyebrow {

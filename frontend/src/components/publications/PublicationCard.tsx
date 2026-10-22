@@ -52,7 +52,7 @@ export function PublicationCard({
           {category && (
             <span className="eyebrow block mb-1">{category.name}</span>
           )}
-          <h3 className="text-h6 line-clamp-2 group-hover:text-primary transition-colors">
+          <h3 className="text-h6 font-semibold text-ink line-clamp-2 transition-colors group-hover:text-primary">
             {publication.title}
           </h3>
           <p className="mono text-caption text-ink-soft mt-2">
@@ -84,15 +84,13 @@ export function PublicationCard({
           />
 
           <div className={cn('flex flex-1 flex-col', isFeature ? 'p-8' : 'p-6')}>
+            {/*
+              One eyebrow colour for every category. Tinting each with its own
+              hue meant ten colours across a single grid, which read as
+              decoration rather than as a taxonomy.
+            */}
             <div className="flex items-center gap-3 mb-3">
-              {category && (
-                <span
-                  className="eyebrow"
-                  style={category.colour ? { color: category.colour } : undefined}
-                >
-                  {category.name}
-                </span>
-              )}
+              {category && <span className="eyebrow">{category.name}</span>}
               {publication.isFeatured && !isFeature && (
                 <span className="inline-flex items-center gap-1 text-caption text-secondary">
                   <Icon name="star" size="sm" filled />
@@ -102,7 +100,8 @@ export function PublicationCard({
 
             <h3
               className={cn(
-                'text-balance transition-colors duration-200 group-hover:text-primary',
+                'text-balance font-semibold text-ink',
+                'transition-colors duration-200 group-hover:text-primary',
                 isFeature ? 'text-h3' : 'text-h5 line-clamp-3',
               )}
             >
@@ -112,8 +111,11 @@ export function PublicationCard({
             {publication.excerpt && (
               <p
                 className={cn(
+                  // `text-base` rather than `text-small`: the excerpt is the
+                  // only thing telling a reader whether the piece answers
+                  // their question, so it has to be readable.
                   'mt-3 text-ink-muted text-pretty',
-                  isFeature ? 'text-lead line-clamp-3' : 'text-small line-clamp-2',
+                  isFeature ? 'text-lead line-clamp-3' : 'text-base line-clamp-2',
                 )}
               >
                 {publication.excerpt}
@@ -123,7 +125,7 @@ export function PublicationCard({
             {/* Pushed to the foot so cards of differing text length still
                 line their metadata up across a row. */}
             <div className="mt-auto pt-6 flex items-center justify-between gap-4">
-              <span className="mono text-caption text-ink-soft">
+              <span className="mono text-caption text-ink-muted">
                 {formatDate(publication.publishedAt)}
                 <span className="mx-2 opacity-40">/</span>
                 {publication.readingMinutes} min read

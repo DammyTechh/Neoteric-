@@ -11,6 +11,7 @@ import {
 } from '@/components/home/Sections';
 import { TestimonialsSection } from '@/components/home/Testimonials';
 import { ContactSection } from '@/components/home/Contact';
+import { OrganisationSchema } from '@/components/seo/StructuredData';
 import { apiGetSafe } from '@/lib/api';
 import type { HomepagePayload } from '@/lib/types';
 
@@ -49,6 +50,12 @@ export default async function HomePage() {
    */
   return (
     <>
+      <OrganisationSchema
+        settings={data.settings}
+        practiceAreas={data.practiceAreas}
+        team={data.team}
+      />
+
       <Header />
 
       <main id="main">

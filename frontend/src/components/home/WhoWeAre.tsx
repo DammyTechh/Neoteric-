@@ -5,12 +5,21 @@ import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/cn';
 import type { SiteSettings } from '@/lib/types';
 
-/** v1's four images, used when the setting is absent. */
+/**
+ * Used when `about.images` is not set.
+ *
+ * Ordered on resolution and subject. `img3` leads because it is the only
+ * photograph in the folder at a usable size (736×1104 against 375×250 for
+ * most of the rest) and the subject — Lady Justice and a gavel in a library —
+ * is the strongest of the set. `img5` and `img6` are excluded: bright-blue
+ * technology composites that clash with the teal-and-bronze palette and read
+ * as clipart beside the photographs.
+ */
 const FALLBACK_IMAGES = [
-  '/images/about/img1.jpg',
+  '/images/about/img3.jpg',
   '/images/about/img2.jpg',
+  '/images/about/img1.jpg',
   '/images/about/img4.jpg',
-  '/images/about/img7.jpg',
 ];
 
 /**
@@ -82,13 +91,26 @@ export function WhoWeAreSection({ settings }: { settings: SiteSettings }) {
                     />
 
                     <TiltCard intensity={2.5} glare>
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-panel shadow-deep">
+                      {/*
+                        A 5:4 frame rather than 4:3, and a column that stops at
+                        640px. Several of these photographs are only ~390px
+                        wide; given the full half-width of a desktop grid they
+                        were being blown up past twice their native size, which
+                        is what made them look soft. Constrained like this they
+                        render close to 1:1.
+
+                        Swap in higher-resolution photography from the
+                        dashboard and this frame simply gets sharper — the
+                        layout does not need to change.
+                      */}
+                      <div className="relative mx-auto aspect-[5/4] w-full max-w-[640px] overflow-hidden rounded-panel shadow-deep">
                         {image && (
                           <Image
                             src={image}
                             alt=""
                             fill
-                            sizes="(max-width: 768px) 100vw, 46vw"
+                            sizes="(max-width: 768px) 92vw, (max-width: 1280px) 46vw, 560px"
+                            quality={90}
                             priority={index === 0}
                             className="object-cover object-center transition-transform duration-700 ease-physical hover:scale-[1.04]"
                           />

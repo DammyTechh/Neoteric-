@@ -33,6 +33,12 @@ export function Logo({
       width={230}
       height={60}
       priority={priority}
+      /*
+       * `unoptimized` keeps the SVG a vector all the way to the browser.
+       * Routed through the image optimiser it is rasterised at a fixed width
+       * and then scaled, which is what made the wordmark look soft.
+       */
+      unoptimized
       className={cn(
         'h-auto w-auto transition-[filter] duration-500',
         // Lifts the charcoal wordmark to white and keeps the bronze warm.
@@ -63,6 +69,7 @@ export function LogoMark({
       width={40}
       height={40}
       priority={priority}
+      unoptimized
       aria-hidden="true"
       className={cn('h-auto w-auto', className)}
     />
