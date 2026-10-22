@@ -65,6 +65,12 @@ export interface MediaAsset {
   createdAt: string;
 }
 
+/** A media folder with how many assets are filed under it. */
+export interface MediaFolder {
+  folder: string;
+  count: number;
+}
+
 export interface PublicationAttachment {
   id: string;
   publicationId: string;
@@ -268,8 +274,16 @@ export interface DashboardStats {
   industriesActive: number;
   testimonialsPublished: number;
   mediaTotal: number;
-  inquiriesByStatus: Record<InquiryStatus, number>;
 }
+
+/**
+ * Enquiries grouped by status, from `GET /admin/inquiries/counts`.
+ *
+ * A separate call rather than part of the dashboard payload, because the
+ * enquiry list refreshes these on every filter change and the rest of the
+ * dashboard figures do not need recomputing that often.
+ */
+export type InquiryStatusCounts = Record<InquiryStatus, number>;
 
 export interface AuditLog {
   id: string;

@@ -63,6 +63,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/*
+          `display=block` rather than the usual `swap`: an icon here is a
+          ligature, so a fallback face renders the literal text
+          "arrow_forward" in the button until the font arrives. A brief blank
+          is better than that.
+
+          Both rules below are disabled knowingly. `no-page-custom-font`
+          fires on any <link> font outside `pages/_document`, which this root
+          layout is the App Router equivalent of.
+        */}
+        {/* eslint-disable-next-line @next/next/google-font-display, @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"
           rel="stylesheet"

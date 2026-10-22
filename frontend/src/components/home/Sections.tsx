@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
@@ -47,27 +48,57 @@ function SectionHead({
 export function AchievementsBand({ achievements }: { achievements: Achievement[] }) {
   if (achievements.length === 0) return null;
 
+  /**
+   * v1's achievements card, matched.
+   *
+   * A white panel at 10/12 width, centred, pulled up over the hero, with the
+   * figures in light bronze separated by hairline rules. The earlier version
+   * made it a full-width four-cell grid, which is a different object.
+   *
+   * The pull-up is `-mt-24` against v1's `-mt-[150px]`: the hero carousel's
+   * controls sit where v1 had nothing, and 150px put the card straight
+   * through them.
+   */
   return (
-    <section id="achievements" className="shell -mt-12 relative z-10 scroll-mt-24" aria-label="Our record">
+    <section
+      id="achievements"
+      className="shell relative z-10 -mt-24 scroll-mt-28 px-6 md:px-8"
+      aria-labelledby="achievements-heading"
+    >
       <Reveal>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-panel bg-surface-line shadow-lift">
-          {achievements.map((achievement) => (
-            <div
-              key={achievement.id}
-              className="group bg-surface p-6 md:p-8 transition-colors duration-300 hover:bg-primary-50"
-            >
-              <p className="mono text-h2 font-medium leading-none text-secondary">
-                {achievement.value}
-                {achievement.suffix && (
-                  <span className="text-h4 text-secondary-400">{achievement.suffix}</span>
+        <div className="mx-auto w-full bg-surface p-8 shadow-deep md:w-10/12 md:p-12">
+          <h2
+            id="achievements-heading"
+            className="text-caption uppercase tracking-[0.4em] text-ink-muted"
+          >
+            Achievements
+          </h2>
+
+          <div className="mt-8 flex flex-col items-stretch gap-y-6 md:flex-row">
+            {achievements.map((achievement, index) => (
+              <Fragment key={achievement.id}>
+                {index > 0 && (
+                  <div
+                    className="h-px w-full bg-surface-line md:mx-10 md:h-auto md:w-px"
+                    aria-hidden="true"
+                  />
                 )}
-              </p>
-              <p className="mt-3 text-small font-medium text-ink">{achievement.label}</p>
-              {achievement.description && (
-                <p className="mt-2 text-caption text-ink-soft">{achievement.description}</p>
-              )}
-            </div>
-          ))}
+
+                <div className="flex-1">
+                  <p className="text-h1 font-light leading-none text-secondary">
+                    {achievement.value}
+                    {achievement.suffix && (
+                      <span className="text-h3">{achievement.suffix}</span>
+                    )}
+                  </p>
+                  <p className="mt-2 font-semibold text-ink">{achievement.label}</p>
+                  {achievement.description && (
+                    <p className="mt-1 text-small text-ink-muted">{achievement.description}</p>
+                  )}
+                </div>
+              </Fragment>
+            ))}
+          </div>
         </div>
       </Reveal>
     </section>

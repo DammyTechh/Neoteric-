@@ -180,12 +180,12 @@ export function HeroCarousel({
                         active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6',
                       )}
                     >
-                      <Link href="/#contact" className="btn-secondary">
+                      <Link href="/#contactUs" className="btn-secondary">
                         <Icon name="forum" size="sm" />
                         {ctaLabel}
                       </Link>
                       <Link
-                        href="/#practice-areas"
+                        href="/#practiceAreas"
                         className="btn border border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:-translate-y-0.5"
                       >
                         Our practice areas

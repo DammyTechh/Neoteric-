@@ -238,7 +238,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     The full text is being added to the site. Please check back shortly, or
                     get in touch if you need it sooner.
                   </p>
-                  <Link href="/#contact" className="btn-primary mt-6">
+                  <Link href="/#contactUs" className="btn-primary mt-6">
                     Contact us
                     <Icon name="arrow_forward" size="sm" />
                   </Link>
@@ -334,7 +334,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     your own circumstances, please get in touch.
                   </p>
                   <Link
-                    href="/#contact"
+                    href="/#contactUs"
                     className="btn btn-sm mt-4 bg-white/10 text-white border border-white/20 hover:bg-white/20"
                   >
                     Speak to our team

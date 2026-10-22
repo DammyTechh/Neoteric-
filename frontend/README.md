@@ -97,14 +97,16 @@ src/
 ├── app/
 │   ├── page.tsx                  homepage
 │   ├── publications/             index + article pages
+│   ├── admin/                    the dashboard (see below)
 │   └── layout.tsx
 ├── components/
 │   ├── home/                     hero carousel + sections
 │   ├── publications/             cards, thumbnails, document viewer
 │   ├── layout/                   header, footer
 │   ├── forms/                    contact, newsletter
+│   ├── admin/                    dashboard shell, controls, editors
 │   └── ui/                       icon, card, reveal primitives
-└── lib/                          api client, types, formatting
+└── lib/                          api client, auth, types, formatting
 ```
 
 ## Section order
@@ -127,3 +129,64 @@ category, seeded from the title so it is stable.
 The article page renders, in order: the HTML body; failing that, an attached
 PDF in an inline viewer; failing that, a short notice. There is deliberately
 no fourth option linking out to Google Drive.
+
+## The dashboard
+
+Lives at `/admin`. `/admin` itself redirects to `/admin/dashboard`; signed-out
+visitors land on `/admin/login`.
+
+There is **no sign-up page**, because there is no registration endpoint in the
+API. The first account comes from the backend's `npm run db:seed:admin`, and
+every later one is invited by a super-administrator from **Operators**. An
+invited operator is emailed a temporary password and cannot reach anything
+until they have replaced it.
+
+```
+/admin/dashboard                 figures, recently edited, unanswered enquiries
+/admin/publications              list, filters, publish / feature / delete
+/admin/publications/new          create
+/admin/publications/[id]         edit, and import a .docx or .pdf as the body
+/admin/media                     library: drag-and-drop upload, alt text, folders
+/admin/content/[collection]      practice areas · industries · team ·
+                                 testimonials · achievements · categories
+/admin/inquiries                 contact form inbox, reply by email
+/admin/newsletter                subscribers and campaigns
+/admin/settings                  every word and picture on the public pages
+/admin/users                     operator accounts and roles
+/admin/audit                     who changed what, and when
+/admin/change-password           also forced after a first sign-in
+/admin/forgot-password           → /admin/reset-password
+```
+
+### Why it is built this way
+
+**The six content collections share one page.** `components/admin/collections.ts`
+describes each collection as data — its fields, their kinds, which one is the
+title, which flag hides it from the site — and `CollectionManager` renders the
+list and the editor from that description. Adding a field is one line; the six
+collections cannot drift apart.
+
+**The access token is held in memory only.** The refresh token is an httpOnly
+cookie the API sets, so nothing here touches `localStorage` — an article body
+is rendered as HTML on this site, and a token in storage is readable by any
+script that gets in. On a hard refresh the provider quietly mints a new access
+token from the cookie before deciding whether anyone is signed in, and it
+refreshes again every twelve minutes so a long edit never ends in a 401.
+
+**Nothing under `/admin` is prerendered** (`dynamic = 'force-dynamic'` on the
+segment) and the whole tree is `noindex`. A build-time snapshot of a page
+behind an auth guard would be an empty shell, and these pages read the query
+string — `?status=new`, `?open=<id>` — which static export will not allow.
+
+**Reordering uses arrows, not drag-and-drop**, so it works with a keyboard and
+on a phone. Moving a row PUTs the whole new order.
+
+### Importing the v1 Google Drive articles
+
+Open a publication, press **Import a document**, and choose the file:
+
+- a `.docx` is converted to HTML and becomes the editable article text;
+- a `.pdf` is attached and rendered by the article page's own viewer.
+
+Either way the reader stays on the site. To do all 27 at once instead, run the
+backend's `npm run db:import-drive`.

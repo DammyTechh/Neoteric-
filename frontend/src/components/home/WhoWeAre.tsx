@@ -117,25 +117,46 @@ export function WhoWeAreSection({ settings }: { settings: SiteSettings }) {
                         )}
                       </div>
                     </TiltCard>
-
-                    {/* A small numeral plate, breaking the image edge. */}
-                    <div
-                      className={cn(
-                        'absolute -bottom-5 grid h-14 w-14 place-items-center rounded-card',
-                        'bg-primary-950 shadow-deep',
-                        imageFirst ? '-right-3 md:-right-5' : '-left-3 md:-left-5',
-                      )}
-                      aria-hidden="true"
-                    >
-                      <span className="mono text-h6 font-medium text-secondary">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                    </div>
                   </div>
 
-                  {/* ── Copy ────────────────────────────────────────────── */}
+                  {/* ── Copy ──────────────────────────────────────────────
+                      On a card of its own rather than loose on the page. Set
+                      against a full-bleed photograph, bare text reads as a
+                      caption; on a panel with a rule and an index it reads as
+                      a statement, which is what these four paragraphs are. */}
                   <div className={cn(imageFirst ? 'md:order-2' : 'md:order-1')}>
-                    <p className="text-lead text-ink-muted text-pretty">{paragraph}</p>
+                    <TiltCard intensity={1} className="h-full">
+                      <div
+                        className={cn(
+                          'relative h-full overflow-hidden rounded-panel',
+                          'border border-surface-line bg-surface p-7 shadow-float md:p-9',
+                          'transition-shadow duration-500 ease-physical hover:shadow-lift',
+                        )}
+                      >
+                        {/* A hairline accent down the reading edge. */}
+                        <span
+                          className={cn(
+                            'absolute inset-y-7 w-[3px] rounded-full md:inset-y-9',
+                            imageFirst ? 'right-0' : 'left-0',
+                            index % 2 === 0 ? 'bg-secondary' : 'bg-primary',
+                          )}
+                          aria-hidden="true"
+                        />
+
+                        <p
+                          className={cn(
+                            'mono text-caption tracking-[0.2em]',
+                            index % 2 === 0 ? 'text-secondary' : 'text-primary',
+                          )}
+                        >
+                          {String(index + 1).padStart(2, '0')}
+                        </p>
+
+                        <p className="mt-4 text-lead text-ink/85 text-pretty">
+                          {paragraph}
+                        </p>
+                      </div>
+                    </TiltCard>
                   </div>
                 </div>
               </Reveal>

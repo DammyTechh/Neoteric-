@@ -13,31 +13,40 @@ import { cn } from '@/lib/cn';
  * Taken from the live site rather than paraphrased: returning visitors look
  * for "Our Vision & Mission", not "Vision". "News" points at the publications
  * page, which is the one thing v2 moved off the homepage.
+ *
+ * `section` is the element the link scrolls to, used to light the active pill.
  */
 const NAV_LINKS = [
-  { label: 'What we do', href: '/#aboutUs' },
-  { label: 'Achievements', href: '/#achievements' },
-  { label: 'Our Vision & Mission', href: '/#visionMission' },
-  { label: 'News', href: '/publications' },
-  { label: 'Our Team', href: '/#ourTeam' },
-  { label: 'Contact us', href: '/#contactUs' },
+  { label: 'What we do', href: '/#aboutUs', section: 'aboutUs' },
+  { label: 'Achievements', href: '/#achievements', section: 'achievements' },
+  { label: 'Our Vision & Mission', href: '/#visionMission', section: 'visionMission' },
+  { label: 'News', href: '/publications', section: null },
+  { label: 'Our Team', href: '/#ourTeam', section: 'ourTeam' },
+  { label: 'Contact us', href: '/#contactUs', section: 'contactUs' },
 ] as const;
 
 /**
- * The site header.
+ * A floating pill header.
  *
- * Transparent over the hero and solid once the reader has scrolled past it,
- * which keeps the hero uninterrupted without losing the navigation. The
- * threshold is deliberately low — the switch should happen as soon as content
- * would otherwise slide under glass, not halfway down the page.
+ * The bar detaches from the top edge and sits on the page as an object. It is
+ * the one piece of chrome here that earns reading that way: it leaves the hero
+ * photograph uninterrupted edge to edge, which a full-width bar does not.
+ *
+ * Two states, both from the brand palette — teal glass over the dark hero,
+ * white with a hairline border once the reader has scrolled onto the page.
+ *
+ * The active link carries its own smaller pill, tracked against whichever
+ * section is in view rather than against the URL hash, since the hash does
+ * not change as someone scrolls past a section.
  */
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const pathname = usePathname();
 
-  // Only the homepage has a hero to sit over; everywhere else starts solid.
-  const overHero = pathname === '/';
+  const onHome = pathname === '/';
+  const solid = scrolled || !onHome || menuOpen;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -45,6 +54,38 @@ export function Header() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  /**
+   * Lights the pill for the section the reader is actually looking at.
+   *
+   * A band across the middle of the viewport rather than the top edge: a
+   * section counts as active once it reaches the middle, which is closer to
+   * where attention sits.
+   */
+  useEffect(() => {
+    if (!onHome) {
+      setActiveSection(null);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveSection(visible.target.id);
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 },
+    );
+
+    for (const link of NAV_LINKS) {
+      if (!link.section) continue;
+      const node = document.getElementById(link.section);
+      if (node) observer.observe(node);
+    }
+
+    return () => observer.disconnect();
+  }, [onHome]);
 
   // A route change should never leave the mobile menu hanging open.
   useEffect(() => setMenuOpen(false), [pathname]);
@@ -57,75 +98,85 @@ export function Header() {
     };
   }, [menuOpen]);
 
-  const solid = scrolled || !overHero || menuOpen;
+  const isActive = (link: (typeof NAV_LINKS)[number]) =>
+    link.section ? activeSection === link.section : pathname.startsWith('/publications');
 
   return (
     <>
-      <header
-        className={cn(
-          'fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-physical',
-          solid
-            ? 'bg-surface/85 backdrop-blur-xl shadow-float border-b border-surface-line'
-            : 'bg-transparent',
-        )}
-      >
-        <div className="shell flex h-20 md:h-24 items-center justify-between gap-6">
-          <Link
-            href="/"
-            className="shrink-0"
-            aria-label="Neoteric LP — home"
+      <header className="fixed inset-x-0 top-0 z-50 pt-3 md:pt-5">
+        <div className="shell">
+          <nav
+            className={cn(
+              'mx-auto flex max-w-6xl items-center gap-2 rounded-full',
+              'px-3 py-2.5 md:px-4 md:py-3',
+              'transition-[background-color,box-shadow,border-color] duration-500 ease-physical',
+              'backdrop-blur-xl',
+              solid
+                ? 'border border-surface-line bg-surface/90 shadow-lift'
+                : 'border border-white/15 bg-primary-950/35 shadow-float',
+            )}
+            aria-label="Main"
           >
-            <Logo
-              variant={solid ? 'dark' : 'light'}
-              priority
-              className="h-10 md:h-12 w-auto"
-            />
-          </Link>
+            <Link href="/" className="shrink-0 pl-1 md:pl-2" aria-label="Neoteric LP — home">
+              <Logo
+                variant={solid ? 'dark' : 'light'}
+                priority
+                className="h-8 w-auto md:h-9"
+              />
+            </Link>
 
-          <nav className="hidden lg:flex items-center gap-7 xl:gap-9" aria-label="Main">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  // Sized to match body copy rather than UI chrome. At 13px
-                  // the navigation read as a toolbar; at 15px it reads as part
-                  // of the page, which is what a firm's masthead should do.
-                  'text-base font-medium transition-colors duration-300 relative group',
-                  solid ? 'text-ink-muted hover:text-primary' : 'text-white/80 hover:text-white',
-                )}
-              >
-                {link.label}
-                <span
-                  className={cn(
-                    'absolute -bottom-1 left-0 h-px w-0 transition-all duration-300 ease-physical',
-                    'group-hover:w-full',
-                    solid ? 'bg-primary' : 'bg-secondary',
-                  )}
-                />
-              </Link>
-            ))}
-          </nav>
+            {/* ── Links ──────────────────────────────────────────────────── */}
+            <div className="ml-auto hidden items-center gap-0.5 lg:flex">
+              {NAV_LINKS.map((link) => {
+                const active = isActive(link);
 
-          <div className="flex items-center gap-3">
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      'rounded-full px-3.5 py-2 text-small font-medium xl:text-base',
+                      'transition-[background-color,color] duration-300',
+                      active
+                        ? solid
+                          ? 'bg-primary-50 text-primary'
+                          : 'bg-white/15 text-white'
+                        : solid
+                          ? 'text-ink-muted hover:bg-surface-sunken hover:text-primary'
+                          : 'text-white/75 hover:bg-white/10 hover:text-white',
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* ── Call to action ─────────────────────────────────────────── */}
             <Link
-              href="/#contact"
+              href="/#contactUs"
               className={cn(
-                'hidden sm:inline-flex btn text-base px-5 py-2.5',
-                solid
-                  ? 'bg-primary text-white shadow-float hover:shadow-lift hover:-translate-y-0.5'
-                  : 'bg-white/15 text-white backdrop-blur-sm border border-white/25 hover:bg-white/25',
+                'ml-auto hidden shrink-0 items-center gap-2 rounded-full px-5 py-2.5 sm:inline-flex lg:ml-2',
+                'text-small font-medium xl:text-base',
+                'bg-secondary text-white shadow-float',
+                'transition-[transform,box-shadow,background-color] duration-300 ease-physical',
+                'hover:-translate-y-0.5 hover:bg-secondary-500 hover:shadow-lift',
               )}
             >
-              Contact us
+              <Icon name="forum" size="sm" />
+              Speak to us
             </Link>
 
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
               className={cn(
-                'lg:hidden grid h-10 w-10 place-items-center rounded-lg transition-colors',
-                solid ? 'text-ink hover:bg-surface-sunken' : 'text-white hover:bg-white/15',
+                'ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-full lg:hidden',
+                'transition-colors duration-300',
+                solid
+                  ? 'bg-surface-sunken text-ink hover:bg-primary-50 hover:text-primary'
+                  : 'bg-white/15 text-white hover:bg-white/25',
               )}
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
@@ -133,43 +184,67 @@ export function Header() {
             >
               <Icon name={menuOpen ? 'close' : 'menu'} size="lg" />
             </button>
-          </div>
+          </nav>
         </div>
       </header>
 
-      {/* Mobile menu. A full panel rather than a dropdown, so the links are
-          thumb-sized on a phone instead of a cramped list. */}
+      {/*
+        Mobile menu: a floating card under the pill rather than a full-screen
+        takeover, so the header still reads as one object and the links stay
+        thumb-sized.
+      */}
       <div
         id="mobile-menu"
         className={cn(
-          'fixed inset-x-0 top-20 md:top-24 z-40 lg:hidden transition-all duration-400 ease-physical',
+          'fixed inset-x-0 top-[4.75rem] z-40 px-6 md:top-[5.5rem] lg:hidden',
+          'transition-all duration-500 ease-physical',
           menuOpen
-            ? 'opacity-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 -translate-y-4 pointer-events-none',
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none -translate-y-3 opacity-0',
         )}
       >
         <nav
-          className="shell pb-6 pt-4 bg-surface/95 backdrop-blur-xl border-b border-surface-line shadow-lift"
+          className="mx-auto max-w-6xl overflow-hidden rounded-panel border border-surface-line bg-surface/95 shadow-deep backdrop-blur-xl"
           aria-label="Mobile"
         >
-          <ul className="flex flex-col">
-            {NAV_LINKS.map((link, index) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="flex items-center justify-between py-4 text-h6 text-ink border-b border-surface-line/70 hover:text-primary transition-colors"
-                  style={{ transitionDelay: menuOpen ? `${index * 40}ms` : '0ms' }}
-                >
-                  {link.label}
-                  <Icon name="arrow_forward" size="sm" className="text-ink-soft" />
-                </Link>
-              </li>
-            ))}
+          <ul className="flex flex-col p-2">
+            {NAV_LINKS.map((link) => {
+              const active = isActive(link);
+
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      'flex items-center justify-between rounded-card px-4 py-3.5 text-base',
+                      'transition-colors duration-200',
+                      active
+                        ? 'bg-primary-50 font-medium text-primary'
+                        : 'text-ink hover:bg-surface-sunken hover:text-primary',
+                    )}
+                  >
+                    {link.label}
+                    <Icon
+                      name="arrow_forward"
+                      size="sm"
+                      className={active ? 'text-primary' : 'text-ink-soft'}
+                    />
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
 
-          <Link href="/#contact" className="btn-primary w-full mt-6">
-            Contact us
-          </Link>
+          <div className="border-t border-surface-line p-3">
+            <Link
+              href="/#contactUs"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-secondary px-5 py-3 text-base font-medium text-white shadow-float transition-colors hover:bg-secondary-500"
+            >
+              <Icon name="forum" size="sm" />
+              Speak to our team
+            </Link>
+          </div>
         </nav>
       </div>
     </>
