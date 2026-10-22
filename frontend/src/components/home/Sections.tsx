@@ -55,14 +55,18 @@ export function AchievementsBand({ achievements }: { achievements: Achievement[]
    * figures in light bronze separated by hairline rules. The earlier version
    * made it a full-width four-cell grid, which is a different object.
    *
-   * The pull-up is `-mt-24` against v1's `-mt-[150px]`: the hero carousel's
+   * The pull-up is smaller than v1's `-mt-[150px]`: the hero carousel's
    * controls sit where v1 had nothing, and 150px put the card straight
-   * through them.
+   * through them. It is halved again on a phone, where the hero has less
+   * height to give away.
+   *
+   * `HeroCarousel`'s bottom padding must stay larger than this, or the slide
+   * rail ends up behind this card.
    */
   return (
     <section
       id="achievements"
-      className="shell relative z-10 -mt-24 scroll-mt-28 px-6 md:px-8"
+      className="shell relative z-10 -mt-12 scroll-mt-28 px-6 md:-mt-24 md:px-8"
       aria-labelledby="achievements-heading"
     >
       <Reveal>

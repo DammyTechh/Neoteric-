@@ -86,6 +86,46 @@ psql "$DATABASE_URL" -f migrations/0003_update_about_content.sql
 go with it. Safe to re-run; it touches three `site_settings` rows and nothing
 else.
 
+### If the achievements band repeats itself
+
+```
+30 Clientele · 30 Clientele · 30 Clientele · 72% Accepted briefs · 72% …
+```
+
+`achievements` was created without a unique constraint on `label`, and its
+seed ended with a bare `ON CONFLICT DO NOTHING`. With no constraint to conflict
+against, that clause never fires — so every re-run of `0001_init.sql` appended
+another four rows, and the homepage renders one cell per row.
+
+```bash
+psql "$DATABASE_URL" -f migrations/0004_fix_achievements.sql
+```
+
+`0004` collapses the duplicates (keeping the oldest row per label, so edits
+made in the dashboard survive), adds the missing constraint, and settles the
+four figures. Any figure the firm added itself is hidden rather than deleted.
+Safe to re-run.
+
+`0001_init.sql` and its split halves now declare `label text NOT NULL UNIQUE`
+and target it explicitly, so a fresh install never needs this.
+
+### If "Who We Are" renders as one slab of text
+
+The section draws one zigzag row per paragraph. `about.body` used to be a
+single string whose paragraphs were separated by blank lines — and a blank line
+is easy to lose between a SQL editor, the database and a later dashboard edit.
+Lose them and four paragraphs become one row.
+
+```bash
+psql "$DATABASE_URL" -f migrations/0005_about_paragraphs.sql
+```
+
+`0005` stores the copy as a JSON **array**, one element per paragraph, which
+cannot lose its separators, and pairs it with four images. The frontend reads
+either shape — `lib/paragraphs.ts` accepts an array, blank-line-separated text,
+escaped newlines, or one unbroken blob, and always returns several paragraphs —
+so this migration removes a class of breakage rather than fixing a crash.
+
 ### If the API says `permission denied for table ...`
 
 ```

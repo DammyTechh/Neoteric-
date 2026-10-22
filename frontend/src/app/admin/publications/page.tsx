@@ -269,6 +269,7 @@ export default function PublicationsPage() {
                         <div className="min-w-0">
                           <Link
                             href={`/admin/publications/${publication.id}`}
+                            prefetch={false}
                             className="font-medium text-ink transition-colors group-hover:text-primary"
                           >
                             {publication.title}

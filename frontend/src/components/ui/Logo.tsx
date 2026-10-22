@@ -40,7 +40,18 @@ export function Logo({
        */
       unoptimized
       className={cn(
-        'h-auto w-auto transition-[filter] duration-500',
+        /*
+         * No height here on purpose.
+         *
+         * `cn` only joins strings — it does not resolve Tailwind conflicts —
+         * and the stylesheet emits `h-auto` after the numeric heights, so an
+         * `h-auto` baked in here silently beat every caller's `h-8` / `h-12`
+         * and the wordmark rendered at its intrinsic 230×60. On a phone that
+         * made the header 82px tall and pushed it over the hero.
+         *
+         * Each call site sets its own height; `w-auto` keeps the aspect.
+         */
+        'w-auto transition-[filter] duration-500',
         // Lifts the charcoal wordmark to white and keeps the bronze warm.
         variant === 'light' && 'brightness-0 invert',
         className,
@@ -71,7 +82,8 @@ export function LogoMark({
       priority={priority}
       unoptimized
       aria-hidden="true"
-      className={cn('h-auto w-auto', className)}
+      // Same reasoning as above: no height here, so the caller's wins.
+      className={cn(className)}
     />
   );
 }

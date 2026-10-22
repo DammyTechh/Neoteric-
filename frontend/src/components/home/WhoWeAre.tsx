@@ -3,6 +3,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { TiltCard } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/cn';
+import { toParagraphs } from '@/lib/paragraphs';
 import type { SiteSettings } from '@/lib/types';
 
 /**
@@ -39,8 +40,15 @@ export function WhoWeAreSection({ settings }: { settings: SiteSettings }) {
   const about = settings.about ?? {};
 
   const heading = typeof about.heading === 'string' ? about.heading : 'Who We Are';
-  const body = typeof about.body === 'string' ? about.body : '';
-  const paragraphs = body.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+
+  /*
+   * `about.body` is an array of paragraphs, but it has also been a string with
+   * blank lines, and — when a newline was lost between the SQL editor and the
+   * database — one unbroken blob. Reading it with `toParagraphs` means the
+   * section renders four rows in every one of those cases instead of
+   * collapsing the whole thing onto one.
+   */
+  const paragraphs = toParagraphs(about.body);
 
   const images = Array.isArray(about.images)
     ? (about.images as string[])
@@ -120,43 +128,41 @@ export function WhoWeAreSection({ settings }: { settings: SiteSettings }) {
                   </div>
 
                   {/* ── Copy ──────────────────────────────────────────────
-                      On a card of its own rather than loose on the page. Set
-                      against a full-bleed photograph, bare text reads as a
-                      caption; on a panel with a rule and an index it reads as
-                      a statement, which is what these four paragraphs are. */}
-                  <div className={cn(imageFirst ? 'md:order-2' : 'md:order-1')}>
-                    <TiltCard intensity={1} className="h-full">
-                      <div
+                      Set plainly on the page, as v1 has it. An earlier version
+                      put each paragraph on its own panel; four stacked panels
+                      beside four photographs made the section read as a grid of
+                      components rather than one firm describing itself. The
+                      depth belongs to the photographs — the words only need
+                      room, a number and a rule. */}
+                  <div
+                    className={cn(
+                      'max-w-xl',
+                      imageFirst ? 'md:order-2' : 'md:order-1',
+                      // Pull the text toward the gutter it shares with its image.
+                      imageFirst ? 'md:ml-0' : 'md:ml-auto',
+                    )}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span
                         className={cn(
-                          'relative h-full overflow-hidden rounded-panel',
-                          'border border-surface-line bg-surface p-7 shadow-float md:p-9',
-                          'transition-shadow duration-500 ease-physical hover:shadow-lift',
+                          'mono text-caption tracking-[0.2em]',
+                          index % 2 === 0 ? 'text-secondary' : 'text-primary',
                         )}
                       >
-                        {/* A hairline accent down the reading edge. */}
-                        <span
-                          className={cn(
-                            'absolute inset-y-7 w-[3px] rounded-full md:inset-y-9',
-                            imageFirst ? 'right-0' : 'left-0',
-                            index % 2 === 0 ? 'bg-secondary' : 'bg-primary',
-                          )}
-                          aria-hidden="true"
-                        />
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span
+                        className={cn(
+                          'h-px flex-1 max-w-[4rem]',
+                          index % 2 === 0 ? 'bg-secondary/50' : 'bg-primary/40',
+                        )}
+                        aria-hidden="true"
+                      />
+                    </div>
 
-                        <p
-                          className={cn(
-                            'mono text-caption tracking-[0.2em]',
-                            index % 2 === 0 ? 'text-secondary' : 'text-primary',
-                          )}
-                        >
-                          {String(index + 1).padStart(2, '0')}
-                        </p>
-
-                        <p className="mt-4 text-lead text-ink/85 text-pretty">
-                          {paragraph}
-                        </p>
-                      </div>
-                    </TiltCard>
+                    <p className="mt-5 text-lead leading-relaxed text-ink/85 text-pretty">
+                      {paragraph}
+                    </p>
                   </div>
                 </div>
               </Reveal>

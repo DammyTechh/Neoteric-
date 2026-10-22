@@ -118,7 +118,7 @@ INSERT INTO public.achievements (label, value, sort_order) VALUES
   ('Accepted briefs',     '72%', 2),
   ('Client satisfaction', '83%', 3),
   ('Delivered briefs',    '70%', 4)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (label) DO NOTHING;
 
 -- ── Site settings ────────────────────────────────────────────────────────────
 INSERT INTO public.site_settings (key, value, value_type, group_name, label, description, is_public, sort_order) VALUES

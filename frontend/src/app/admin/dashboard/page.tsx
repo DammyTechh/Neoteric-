@@ -287,6 +287,7 @@ export default function DashboardPage() {
                           <Td>
                             <Link
                               href={`/admin/publications/${publication.id}`}
+                              prefetch={false}
                               className="font-medium text-ink transition-colors group-hover:text-primary"
                             >
                               {publication.title}

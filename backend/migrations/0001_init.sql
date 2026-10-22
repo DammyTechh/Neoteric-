@@ -534,7 +534,11 @@ CREATE TRIGGER trg_testimonials_updated_at
 
 CREATE TABLE IF NOT EXISTS public.achievements (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  label        text        NOT NULL,
+  -- UNIQUE is load-bearing, not decoration: the seed below relies on it to
+  -- make re-running this file a no-op. Without it `ON CONFLICT DO NOTHING`
+  -- has no constraint to detect a conflict against, so every re-run appends
+  -- another four rows and the homepage band repeats itself.
+  label        text        NOT NULL UNIQUE,
   value        text        NOT NULL,
   suffix       text,
   description  text,
@@ -1015,7 +1019,7 @@ INSERT INTO public.achievements (label, value, sort_order) VALUES
   ('Accepted briefs',     '72%', 2),
   ('Client satisfaction', '83%', 3),
   ('Delivered briefs',    '70%', 4)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (label) DO NOTHING;
 
 -- ── Site settings ────────────────────────────────────────────────────────────
 INSERT INTO public.site_settings (key, value, value_type, group_name, label, description, is_public, sort_order) VALUES

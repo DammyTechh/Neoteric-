@@ -543,7 +543,11 @@ CREATE TRIGGER trg_testimonials_updated_at
 
 CREATE TABLE IF NOT EXISTS public.achievements (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  label        text        NOT NULL,
+  -- UNIQUE is load-bearing, not decoration: the seed in part 2 relies on it
+  -- to make re-running these files a no-op. Without it `ON CONFLICT DO
+  -- NOTHING` has no constraint to detect a conflict against, so every re-run
+  -- appends another four rows and the homepage band repeats itself.
+  label        text        NOT NULL UNIQUE,
   value        text        NOT NULL,
   suffix       text,
   description  text,
