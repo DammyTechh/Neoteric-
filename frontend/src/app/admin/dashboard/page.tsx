@@ -354,12 +354,12 @@ export default function DashboardPage() {
                             className="block px-6 py-4 transition-colors hover:bg-surface-sunken"
                           >
                             <div className="flex items-center justify-between gap-3">
-                              <p className="truncate text-small font-medium text-ink">
+                              <p className="truncate text-base font-medium text-ink">
                                 {inquiry.fullName}
                               </p>
                               <Pill tone="teal">{formatRelative(inquiry.createdAt)}</Pill>
                             </div>
-                            <p className="mt-1 truncate text-small text-ink-muted">
+                            <p className="mt-1 truncate text-base text-ink-muted">
                               {inquiry.subject || inquiry.message}
                             </p>
                             <p className="mt-2 font-mono text-caption text-ink-soft">

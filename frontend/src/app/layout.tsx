@@ -78,6 +78,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"
           rel="stylesheet"
         />
+
+        {/*
+          Hides icon ligatures until the font is ready.
+
+          An icon here is the text "arrow_forward" styled with a font that
+          turns it into an arrow. Before that font arrives the raw word shows,
+          which is how a button ends up reading "upload_file". `font-display:
+          block` covers the first few seconds; this covers the rest, including
+          a network where the font never arrives at all.
+
+          The class is only ever added by this script, so a browser without
+          `document.fonts` — or with JavaScript off — never reaches a state
+          where the icons are hidden with nothing to replace them. The timeout
+          is the same guarantee for a promise that never settles.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(!document.fonts||!document.fonts.load)return;
+var r=document.documentElement;r.classList.add('fonts-pending');
+var show=function(){r.classList.remove('fonts-pending')};
+document.fonts.load("20px 'Material Symbols Rounded'").then(show).catch(show);
+setTimeout(show,3000);}catch(e){}})();`,
+          }}
+        />
       </head>
       <body>{children}</body>
     </html>

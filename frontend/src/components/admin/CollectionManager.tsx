@@ -507,7 +507,7 @@ export function CollectionManager({ spec }: { spec: CollectionSpec }) {
                     </div>
 
                     {Boolean(spec.subtitleField && record[spec.subtitleField]) && (
-                      <p className="mt-1 line-clamp-2 text-small text-ink-muted">
+                      <p className="mt-1 line-clamp-2 text-base text-ink-muted">
                         {String(record[spec.subtitleField as string] ?? '').replace(
                           /<[^>]*>/g,
                           '',

@@ -41,6 +41,7 @@ const NAV_LINKS = [
  */
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const pathname = usePathname();
@@ -48,11 +49,55 @@ export function Header() {
   const onHome = pathname === '/';
   const solid = scrolled || !onHome || menuOpen;
 
+  /**
+   * Gets out of the way while the reader is scrolling, and comes back the
+   * moment they stop.
+   *
+   * Not the usual "hide on the way down, show on the way up": the bar simply
+   * leaves during motion in either direction and returns on rest, which is
+   * what makes it feel like it is yielding the page rather than tracking the
+   * reader.
+   *
+   * One handler drives both this and the solid/glass state, so the two cannot
+   * disagree. All of it is in a `requestAnimationFrame` because a scroll
+   * handler that reads layout on every event is the classic cause of a janky
+   * bar. The 140ms idle delay is the shortest that does not flicker between
+   * the discrete scroll events a mouse wheel produces.
+   */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
+    let frame = 0;
+    let idleTimer: ReturnType<typeof setTimeout>;
+
+    const settle = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+
+      // Never hide at the very top: there is nothing to make room for, and a
+      // bar that vanishes on the hero looks broken rather than considerate.
+      setHidden(y > 120);
+
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => setHidden(false), 140);
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        settle();
+      });
+    };
+
+    // Set the initial state without waiting for a scroll.
+    setScrolled(window.scrollY > 24);
+
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(idleTimer);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   /**
@@ -103,7 +148,21 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 pt-3 md:pt-5">
+      <header
+        className={cn(
+          'fixed inset-x-0 top-0 z-50 pt-3 md:pt-5',
+          'transition-transform ease-physical',
+          /*
+            Quick out, quicker back. A 500ms slide means the bar is still
+            on screen while the reader is already moving, which defeats the
+            point; coming back is faster still, because that is the moment
+            they want it.
+          */
+          hidden && !menuOpen
+            ? '-translate-y-[150%] duration-200'
+            : 'translate-y-0 duration-300',
+        )}
+      >
         <div className="shell">
           <nav
             className={cn(
@@ -198,6 +257,7 @@ export function Header() {
         className={cn(
           'fixed inset-x-0 top-[4.75rem] z-40 px-6 md:top-[5.5rem] lg:hidden',
           'transition-all duration-500 ease-physical',
+          hidden && !menuOpen && '-translate-y-[150%]',
           menuOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none -translate-y-3 opacity-0',

@@ -56,9 +56,11 @@ export function Panel({
       )}
     >
       {(title || actions) && (
-        <header className="flex flex-wrap items-start justify-between gap-4 border-b border-surface-line px-6 py-4">
+        <header className="flex flex-wrap items-start justify-between gap-4 border-b border-surface-line px-6 py-5">
           <div className="min-w-0">
-            {title && <h2 className="text-base font-semibold text-ink">{title}</h2>}
+            {title && (
+              <h2 className="text-lead font-semibold tracking-[-0.01em] text-ink">{title}</h2>
+            )}
             {description && (
               <p className="mt-1 text-small text-ink-muted">{description}</p>
             )}
@@ -102,8 +104,8 @@ export function Button({
       {...rest}
       disabled={rest.disabled || busy}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5',
-        'text-small font-medium transition-all duration-300 ease-physical',
+        'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5',
+        'text-base font-medium transition-all duration-300 ease-physical',
         'disabled:cursor-not-allowed disabled:opacity-50',
         'enabled:hover:-translate-y-px',
         BUTTON_STYLES[variant],
@@ -138,7 +140,7 @@ export function IconButton({
       aria-label={label}
       title={label}
       className={cn(
-        'grid h-9 w-9 place-items-center rounded-card transition-colors duration-200',
+        'grid h-10 w-10 place-items-center rounded-card transition-colors duration-200',
         'disabled:cursor-not-allowed disabled:opacity-40',
         tone === 'danger'
           ? 'text-ink-muted hover:bg-red-50 hover:text-red-600'
@@ -169,7 +171,7 @@ export function Field({
 }) {
   return (
     <div className={className}>
-      <label className="mb-2 block text-small font-medium text-ink">
+      <label className="mb-2 block text-base font-medium text-ink">
         {label}
         {required && <span className="ml-1 text-secondary">*</span>}
       </label>
@@ -177,7 +179,7 @@ export function Field({
       {error ? (
         <p className="mt-2 text-small text-red-600">{error}</p>
       ) : (
-        hint && <p className="mt-2 text-small text-ink-muted">{hint}</p>
+        hint && <p className="mt-2 text-small leading-relaxed text-ink-muted">{hint}</p>
       )}
     </div>
   );
@@ -244,9 +246,9 @@ export function Checkbox({
         className="mt-1 h-4 w-4 shrink-0 cursor-pointer rounded border-surface-line text-primary focus:ring-2 focus:ring-primary/20"
       />
       <label htmlFor={id} className="cursor-pointer select-none">
-        <span className="block text-small font-medium text-ink">{label}</span>
+        <span className="block text-base font-medium text-ink">{label}</span>
         {description && (
-          <span className="mt-0.5 block text-small text-ink-muted">{description}</span>
+          <span className="mt-1 block text-small leading-relaxed text-ink-muted">{description}</span>
         )}
       </label>
     </div>
@@ -315,8 +317,8 @@ export function Pill({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-3 py-1',
-        'text-caption font-medium',
+        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1',
+        'text-caption font-medium uppercase tracking-[0.06em]',
         PILL_TONES[tone],
       )}
     >
@@ -372,8 +374,8 @@ export function Th({
     <th
       scope="col"
       className={cn(
-        'border-b border-surface-line px-6 py-3',
-        'text-caption font-medium uppercase tracking-[0.1em] text-ink-muted',
+        'border-b border-surface-line bg-surface-sunken/40 px-6 py-3.5',
+        'text-caption font-semibold uppercase tracking-[0.1em] text-ink-muted',
         className,
       )}
     >
@@ -390,7 +392,7 @@ export function Td({
   className?: string;
 }) {
   return (
-    <td className={cn('border-b border-surface-line px-6 py-4 text-small text-ink', className)}>
+    <td className={cn('border-b border-surface-line px-6 py-4 text-base text-ink', className)}>
       {children}
     </td>
   );
@@ -411,12 +413,14 @@ export function EmptyState({
 }) {
   return (
     <div className="px-6 py-16 text-center">
-      <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-surface-sunken">
-        <Icon name={icon} size="lg" className="text-ink-soft" />
+      <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-surface-sunken">
+        <Icon name={icon} size="xl" className="text-ink-soft" />
       </span>
-      <p className="mt-4 text-base font-semibold text-ink">{title}</p>
+      <p className="mt-5 text-lead font-semibold text-ink">{title}</p>
       {description && (
-        <p className="mx-auto mt-2 max-w-md text-small text-ink-muted">{description}</p>
+        <p className="mx-auto mt-2 max-w-md text-base leading-relaxed text-ink-muted">
+          {description}
+        </p>
       )}
       {action && <div className="mt-6 flex justify-center">{action}</div>}
     </div>
@@ -427,7 +431,7 @@ export function Spinner({ label = 'Loading…' }: { label?: string }) {
   return (
     <div className="flex items-center justify-center gap-3 px-6 py-16 text-ink-muted">
       <Icon name="progress_activity" className="animate-spin" />
-      <span className="text-small">{label}</span>
+      <span className="text-base">{label}</span>
     </div>
   );
 }
@@ -435,11 +439,11 @@ export function Spinner({ label = 'Loading…' }: { label?: string }) {
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <div className="px-6 py-16 text-center" role="alert">
-      <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-red-50">
-        <Icon name="error" size="lg" className="text-red-500" />
+      <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-red-50">
+        <Icon name="error" size="xl" className="text-red-500" />
       </span>
-      <p className="mt-4 text-base font-semibold text-ink">Could not load this</p>
-      <p className="mx-auto mt-2 max-w-md text-small text-ink-muted">{message}</p>
+      <p className="mt-5 text-lead font-semibold text-ink">Could not load this</p>
+      <p className="mx-auto mt-2 max-w-md text-base leading-relaxed text-ink-muted">{message}</p>
       {onRetry && (
         <div className="mt-6 flex justify-center">
           <Button variant="ghost" icon="refresh" onClick={onRetry}>
@@ -510,8 +514,8 @@ export function Modal({
       >
         <header className="flex items-start justify-between gap-4 border-b border-surface-line px-6 py-5">
           <div className="min-w-0">
-            <h2 className="text-h5 font-semibold text-ink">{title}</h2>
-            {description && <p className="mt-1 text-small text-ink-muted">{description}</p>}
+            <h2 className="text-h5 font-semibold tracking-[-0.01em] text-ink">{title}</h2>
+            {description && <p className="mt-1.5 text-base text-ink-muted">{description}</p>}
           </div>
           <IconButton icon="close" label="Close" onClick={onClose} />
         </header>
@@ -615,7 +619,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             />
             <p
               className={cn(
-                'text-small',
+                'text-base',
                 toast.tone === 'success' ? 'text-emerald-900' : 'text-red-900',
               )}
             >
@@ -653,7 +657,7 @@ export function Pagination({
 }) {
   if (totalPages <= 1) {
     return (
-      <p className="px-6 py-4 text-small text-ink-muted">
+      <p className="px-6 py-4 text-base text-ink-muted">
         <span className="font-mono">{total}</span> {total === 1 ? 'record' : 'records'}
       </p>
     );
@@ -661,7 +665,7 @@ export function Pagination({
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
-      <p className="text-small text-ink-muted">
+      <p className="text-base text-ink-muted">
         Page <span className="font-mono">{page}</span> of{' '}
         <span className="font-mono">{totalPages}</span> ·{' '}
         <span className="font-mono">{total}</span> records

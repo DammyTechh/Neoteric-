@@ -427,7 +427,7 @@ export function PublicationEditor({ publicationId }: { publicationId?: string })
               <>
                 <div className="mb-6 flex items-start gap-4 rounded-card border border-primary-100 bg-primary-50/50 p-4">
                   <Icon name="auto_stories" className="shrink-0 text-primary" />
-                  <p className="text-small text-primary-900">
+                  <p className="text-base leading-relaxed text-primary-900">
                     Upload a <span className="font-mono">.docx</span> and its text is
                     converted into the editable content below. Upload a{' '}
                     <span className="font-mono">.pdf</span> and it is attached, then shown
@@ -451,7 +451,7 @@ export function PublicationEditor({ publicationId }: { publicationId?: string })
 
                 {record?.attachments && record.attachments.length > 0 && (
                   <div className="mt-6">
-                    <p className="mb-3 text-small font-medium text-ink">Attachments</p>
+                    <p className="mb-3 text-base font-medium text-ink">Attachments</p>
                     <ul className="space-y-2">
                       {record.attachments.map((attachment) => (
                         <li

@@ -156,7 +156,7 @@ export default function PublicationsPage() {
       {withoutBody > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-4 rounded-card border border-amber-200 bg-amber-50 p-4">
           <Icon name="pending_actions" className="shrink-0 text-amber-600" />
-          <p className="min-w-0 flex-1 text-small text-amber-900">
+          <p className="min-w-0 flex-1 text-base leading-relaxed text-amber-900">
             <span className="font-mono">{withoutBody}</span> of these have no content yet,
             so the article page tells readers the piece is being prepared. Open one and
             import its document to make it readable.

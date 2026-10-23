@@ -45,13 +45,13 @@ UPDATE public.site_settings
 
 UPDATE public.site_settings
    SET value = $imgs$[
-         "/images/about/img3.jpg",
-         "/images/about/img2.jpg",
-         "/images/about/img1.jpg",
-         "/images/about/img4.jpg"
+         "/images/about/about-1.jpg",
+         "/images/about/about-2.jpg",
+         "/images/about/about-3.jpg",
+         "/images/about/about-4.jpg"
        ]$imgs$::jsonb,
        value_type = 'json',
-       description = 'Paired with about.body by position. Replace these with higher-resolution photographs from the media library when you have them.',
+       description = 'Paired with about.body by position: justice, the agreement, the team, the client. Replace these with higher-resolution photographs from the media library when you have them.',
        updated_at = now()
  WHERE key = 'about.images';
 

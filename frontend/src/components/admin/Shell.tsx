@@ -100,7 +100,7 @@ export function AdminShell({
       <div className="grid min-h-screen place-items-center bg-surface-sunken">
         <div className="flex items-center gap-3 text-ink-muted">
           <Icon name="progress_activity" className="animate-spin" />
-          <span className="text-small">Loading…</span>
+          <span className="text-base">Loading…</span>
         </div>
       </div>
     );
@@ -112,10 +112,14 @@ export function AdminShell({
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-        <LogoMark className="h-8 w-8" />
+        <LogoMark className="h-9 w-9" />
         <div className="min-w-0">
-          <p className="truncate text-small font-semibold text-white">Neoteric LP</p>
-          <p className="truncate text-caption text-primary-300">Dashboard</p>
+          <p className="truncate text-base font-semibold leading-tight text-white">
+            Neoteric LP
+          </p>
+          <p className="truncate text-caption uppercase tracking-[0.14em] text-primary-300">
+            Dashboard
+          </p>
         </div>
       </div>
 
@@ -126,7 +130,7 @@ export function AdminShell({
 
           return (
             <div key={group.heading} className="mb-6">
-              <p className="px-3 pb-2 text-caption uppercase tracking-[0.14em] text-primary-400">
+              <p className="px-3 pb-3 text-caption font-medium uppercase tracking-[0.16em] text-primary-400/90">
                 {group.heading}
               </p>
               <ul className="space-y-0.5">
@@ -139,18 +143,34 @@ export function AdminShell({
                       <Link
                         href={item.href}
                         aria-current={active ? 'page' : undefined}
+                        /*
+                          Every page under /admin is force-dynamic, so there
+                          is no RSC payload to prefetch — Next tries anyway on
+                          hover and logs a failed request for each link in
+                          this rail. Nothing is lost by turning it off: these
+                          pages fetch their own data after navigating.
+                        */
+                        prefetch={false}
                         className={cn(
-                          'flex items-center gap-3 rounded-card px-3 py-2.5 text-small transition-colors duration-200',
+                          'group flex items-center gap-3 rounded-card px-3 py-2.5',
+                          'text-base transition-colors duration-200',
                           active
-                            ? 'bg-white/10 font-medium text-white'
-                            : 'text-primary-200 hover:bg-white/5 hover:text-white',
+                            ? 'bg-white/[0.12] font-medium text-white'
+                            : 'text-primary-200 hover:bg-white/[0.07] hover:text-white',
                         )}
                       >
-                        <Icon
-                          name={item.icon}
-                          size="sm"
-                          className={active ? 'text-secondary' : ''}
-                        />
+                        {/* The icon sits in a fixed box so every label starts
+                            on the same vertical line, whatever the glyph. */}
+                        <span
+                          className={cn(
+                            'grid h-8 w-8 shrink-0 place-items-center rounded-lg transition-colors duration-200',
+                            active
+                              ? 'bg-secondary/20 text-secondary'
+                              : 'text-primary-300 group-hover:text-white',
+                          )}
+                        >
+                          <Icon name={item.icon} />
+                        </span>
                         {item.label}
                       </Link>
                     </li>
@@ -166,9 +186,11 @@ export function AdminShell({
         <Link
           href="/"
           target="_blank"
-          className="flex items-center gap-3 rounded-card px-3 py-2.5 text-small text-primary-200 transition-colors hover:bg-white/5 hover:text-white"
+          className="group flex items-center gap-3 rounded-card px-3 py-2.5 text-base text-primary-200 transition-colors hover:bg-white/[0.07] hover:text-white"
         >
-          <Icon name="open_in_new" size="sm" />
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-primary-300 transition-colors group-hover:text-white">
+            <Icon name="open_in_new" />
+          </span>
           View the website
         </Link>
       </div>
@@ -178,7 +200,7 @@ export function AdminShell({
   return (
     <div className="min-h-screen bg-surface-sunken">
       {/* ── Sidebar, desktop ─────────────────────────────────────────────── */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 bg-primary-950 lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 bg-primary-950 lg:block">
         {sidebar}
       </aside>
 
@@ -197,7 +219,7 @@ export function AdminShell({
         </div>
       )}
 
-      <div className="lg:pl-64">
+      <div className="lg:pl-72">
         {/* ── Top bar ────────────────────────────────────────────────────── */}
         <header className="sticky top-0 z-30 border-b border-surface-line bg-surface/90 backdrop-blur-xl">
           <div className="flex items-center gap-4 px-4 py-4 md:px-8">
@@ -211,9 +233,11 @@ export function AdminShell({
             </button>
 
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-h5 font-semibold text-ink">{title}</h1>
+              <h1 className="truncate text-h4 font-semibold tracking-[-0.01em] text-ink">
+                {title}
+              </h1>
               {description && (
-                <p className="mt-0.5 truncate text-small text-ink-muted">{description}</p>
+                <p className="mt-1 truncate text-base text-ink-muted">{description}</p>
               )}
             </div>
 
@@ -222,7 +246,7 @@ export function AdminShell({
             <div className="relative shrink-0">
               <details className="group">
                 <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-surface-line px-2 py-1.5 transition-colors hover:bg-surface-sunken">
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-caption font-medium text-white">
+                  <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-small font-medium text-white">
                     {user.fullName
                       .split(' ')
                       .filter(Boolean)
@@ -235,23 +259,23 @@ export function AdminShell({
 
                 <div className="absolute right-0 top-full z-40 mt-2 w-60 overflow-hidden rounded-card border border-surface-line bg-surface shadow-lift">
                   <div className="border-b border-surface-line px-4 py-3">
-                    <p className="truncate text-small font-medium text-ink">{user.fullName}</p>
-                    <p className="truncate text-caption text-ink-muted">{user.email}</p>
-                    <p className="mt-1 text-caption text-secondary">
+                    <p className="truncate text-base font-medium text-ink">{user.fullName}</p>
+                    <p className="truncate text-small text-ink-muted">{user.email}</p>
+                    <p className="mt-1.5 text-caption font-medium uppercase tracking-[0.12em] text-secondary">
                       {user.role.replace('_', ' ')}
                     </p>
                   </div>
                   <Link
                     href="/admin/change-password"
-                    className="flex items-center gap-2 px-4 py-2.5 text-small text-ink transition-colors hover:bg-surface-sunken"
+                    className="flex items-center gap-3 px-4 py-3 text-base text-ink transition-colors hover:bg-surface-sunken"
                   >
-                    <Icon name="lock" size="sm" />
+                    <Icon name="lock" size="sm" className="text-ink-muted" />
                     Change password
                   </Link>
                   <button
                     type="button"
                     onClick={() => void signOut()}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-small text-secondary-700 transition-colors hover:bg-secondary-50"
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-secondary-700 transition-colors hover:bg-secondary-50"
                   >
                     <Icon name="logout" size="sm" />
                     Sign out

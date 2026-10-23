@@ -332,7 +332,7 @@ export default function NewsletterPage() {
                       <StatusPill status={campaign.status} />
                     </div>
                     {campaign.preheader && (
-                      <p className="mt-1 truncate text-small text-ink-muted">
+                      <p className="mt-1 truncate text-base text-ink-muted">
                         {campaign.preheader}
                       </p>
                     )}

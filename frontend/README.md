@@ -190,3 +190,37 @@ Open a publication, press **Import a document**, and choose the file:
 
 Either way the reader stays on the site. To do all 27 at once instead, run the
 backend's `npm run db:import-drive`.
+
+## Icons
+
+Material Symbols Rounded, loaded from Google Fonts. Two details matter:
+
+**Optical sizing tracks the rendered size.** The font thins its strokes as the
+optical-size axis rises, on the assumption the glyph is getting bigger. Pinned
+at `opsz 24` while drawn at 16px — which every small icon in the dashboard was
+doing — the strokes come out spindly and grey beside the text. Each size class
+in `globals.css` sets its own `opsz`, and the small sizes carry a little more
+weight so a 16px icon matches the 15px text next to it.
+
+**A ligature is text until the font arrives.** An icon is the word
+`arrow_forward` styled with a font that turns it into an arrow, so before the
+font loads the raw word shows. `font-display: block` covers the first few
+seconds; the small script in `app/layout.tsx` covers the rest, including a
+network where the font never arrives. It only ever *adds* the hiding class, so
+a browser without `document.fonts`, or with JavaScript off, can never reach a
+state where the icons are hidden with nothing to replace them.
+
+The font is not self-hosted. The dashboard lets an administrator type any
+Material Symbols name into an icon field, so a subset built from the names
+found in the source would silently fail the first time someone picks a new
+one — and the full variable font is several megabytes.
+
+## The header
+
+The bar leaves while the reader is scrolling and returns the moment they stop —
+in either direction, rather than the usual hide-on-down / show-on-up. It never
+hides within 120px of the top, where there is nothing to make room for, and
+never while the mobile menu is open, which would leave the links floating.
+
+Scrolling is read inside a `requestAnimationFrame`, and one handler drives both
+this and the glass/solid state so the two cannot disagree.

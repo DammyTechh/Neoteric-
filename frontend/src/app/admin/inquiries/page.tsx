@@ -296,12 +296,12 @@ export default function InquiriesPage() {
                       </span>
 
                       {inquiry.subject && (
-                        <span className="mt-1 block text-small font-medium text-ink">
+                        <span className="mt-1 block text-base font-medium text-ink">
                           {inquiry.subject}
                         </span>
                       )}
 
-                      <span className="mt-1 block line-clamp-2 text-small text-ink-muted">
+                      <span className="mt-1 block line-clamp-2 text-base text-ink-muted">
                         {inquiry.message}
                       </span>
 
@@ -393,7 +393,7 @@ export default function InquiriesPage() {
             </dl>
 
             <div>
-              <p className="mb-2 text-small font-medium text-ink">
+              <p className="mb-2 text-base font-medium text-ink">
                 {open.subject || 'Their message'}
               </p>
               <div className="whitespace-pre-wrap rounded-card border border-surface-line p-4 text-base text-ink">

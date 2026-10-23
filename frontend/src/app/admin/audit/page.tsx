@@ -233,7 +233,7 @@ export default function AuditPage() {
                 ] as const
               ).map(([label, state]) => (
                 <div key={label}>
-                  <p className="mb-2 text-small font-medium text-ink">{label}</p>
+                  <p className="mb-2 text-base font-medium text-ink">{label}</p>
                   <pre className="max-h-80 overflow-auto rounded-card border border-surface-line bg-surface-sunken p-4 font-mono text-caption text-ink">
                     {state == null ? '—' : JSON.stringify(state, null, 2)}
                   </pre>

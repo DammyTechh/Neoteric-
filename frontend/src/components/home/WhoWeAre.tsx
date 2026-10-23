@@ -9,18 +9,23 @@ import type { SiteSettings } from '@/lib/types';
 /**
  * Used when `about.images` is not set.
  *
- * Ordered on resolution and subject. `img3` leads because it is the only
- * photograph in the folder at a usable size (736×1104 against 375×250 for
- * most of the rest) and the subject — Lady Justice and a gavel in a library —
- * is the strongest of the set. `img5` and `img6` are excluded: bright-blue
- * technology composites that clash with the teal-and-bronze palette and read
- * as clipart beside the photographs.
+ * Chosen by subject, so the picture argues the paragraph beside it: Lady
+ * Justice for who the firm is, the gavel and signed agreement for how it
+ * works, the team at the table for its advisory practice, and a lawyer with
+ * a client for the closing paragraph about being close to them.
+ *
+ * These are repaired copies of the firm's originals, which were 375–396px on
+ * the long edge and flat — `scripts/enhance-about-images.py` recovers the
+ * contrast and resamples them, which is as far as the source allows. Better
+ * photography uploaded through the media library replaces them with no code
+ * change. The blue technology composites in the folder are left out: they
+ * read as clipart beside real photographs.
  */
 const FALLBACK_IMAGES = [
-  '/images/about/img3.jpg',
-  '/images/about/img2.jpg',
-  '/images/about/img1.jpg',
-  '/images/about/img4.jpg',
+  '/images/about/about-1.jpg',
+  '/images/about/about-2.jpg',
+  '/images/about/about-3.jpg',
+  '/images/about/about-4.jpg',
 ];
 
 /**
@@ -74,7 +79,11 @@ export function WhoWeAreSection({ settings }: { settings: SiteSettings }) {
 
             return (
               <Reveal key={index} delay={0.05}>
-                <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16 lg:gap-20">
+                {/* Stretch rather than centre: a short paragraph next to a tall
+                      photograph leaves the card floating in the middle of the
+                      row, which reads as unfinished. Equal heights, with the
+                      copy centred inside its own card. */}
+                <div className="grid gap-10 md:grid-cols-2 md:items-stretch md:gap-16 lg:gap-20">
                   {/* ── Image ───────────────────────────────────────────── */}
                   <div
                     className={cn(
@@ -128,41 +137,82 @@ export function WhoWeAreSection({ settings }: { settings: SiteSettings }) {
                   </div>
 
                   {/* ── Copy ──────────────────────────────────────────────
-                      Set plainly on the page, as v1 has it. An earlier version
-                      put each paragraph on its own panel; four stacked panels
-                      beside four photographs made the section read as a grid of
-                      components rather than one firm describing itself. The
-                      depth belongs to the photographs — the words only need
-                      room, a number and a rule. */}
+                      A card that lifts on approach, so the words sit on the
+                      page as an object rather than floating loose beside a
+                      full-bleed photograph. The depth is restrained on
+                      purpose: a wide tint behind it, a hairline border, and a
+                      tilt of barely a degree. Enough to read as physical, not
+                      enough to turn a law firm's description of itself into a
+                      toy. */}
                   <div
                     className={cn(
-                      'max-w-xl',
+                      'relative',
                       imageFirst ? 'md:order-2' : 'md:order-1',
-                      // Pull the text toward the gutter it shares with its image.
-                      imageFirst ? 'md:ml-0' : 'md:ml-auto',
                     )}
                   >
-                    <div className="flex items-center gap-4">
-                      <span
+                    {/* The plate behind the card, leaning the opposite way to
+                        the photograph's so the pair reads as one spread. */}
+                    <div
+                      className={cn(
+                        'absolute inset-0 rounded-panel transition-transform duration-700 ease-physical',
+                        index % 2 === 0 ? 'bg-primary/10' : 'bg-secondary/15',
+                      )}
+                      style={{
+                        transform: imageFirst
+                          ? 'rotate(1.5deg) translate(10px, 10px)'
+                          : 'rotate(-1.5deg) translate(-10px, 10px)',
+                      }}
+                      aria-hidden="true"
+                    />
+
+                    <TiltCard intensity={1.5} className="h-full">
+                      <div
                         className={cn(
-                          'mono text-caption tracking-[0.2em]',
-                          index % 2 === 0 ? 'text-secondary' : 'text-primary',
+                          'group/card relative flex h-full flex-col justify-center',
+                          'overflow-hidden rounded-panel',
+                          'border border-surface-line bg-surface p-8 md:p-10',
+                          'shadow-float transition-shadow duration-700 ease-physical',
+                          'hover:shadow-deep',
                         )}
                       >
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                      <span
-                        className={cn(
-                          'h-px flex-1 max-w-[4rem]',
-                          index % 2 === 0 ? 'bg-secondary/50' : 'bg-primary/40',
-                        )}
-                        aria-hidden="true"
-                      />
-                    </div>
+                        {/* A wash that warms as the card is approached. */}
+                        <div
+                          className={cn(
+                            'pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700',
+                            'group-hover/card:opacity-100',
+                            index % 2 === 0
+                              ? 'bg-gradient-to-br from-secondary/[0.06] to-transparent'
+                              : 'bg-gradient-to-br from-primary/[0.06] to-transparent',
+                          )}
+                          aria-hidden="true"
+                        />
 
-                    <p className="mt-5 text-lead leading-relaxed text-ink/85 text-pretty">
-                      {paragraph}
-                    </p>
+                        {/* The index, set large and light — a numeral the eye
+                            can use to count the four without reading them. */}
+                        <div className="relative flex items-baseline gap-4">
+                          <span
+                            className={cn(
+                              'mono text-h3 font-light leading-none',
+                              index % 2 === 0 ? 'text-secondary/35' : 'text-primary/30',
+                            )}
+                          >
+                            {String(index + 1).padStart(2, '0')}
+                          </span>
+                          <span
+                            className={cn(
+                              'h-px flex-1 origin-left transition-transform duration-700 ease-physical',
+                              'scale-x-50 group-hover/card:scale-x-100',
+                              index % 2 === 0 ? 'bg-secondary/40' : 'bg-primary/35',
+                            )}
+                            aria-hidden="true"
+                          />
+                        </div>
+
+                        <p className="relative mt-6 text-lead leading-relaxed text-ink/85 text-pretty">
+                          {paragraph}
+                        </p>
+                      </div>
+                    </TiltCard>
                   </div>
                 </div>
               </Reveal>

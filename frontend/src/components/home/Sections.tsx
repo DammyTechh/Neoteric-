@@ -45,8 +45,36 @@ function SectionHead({
 
 // ── Achievements ────────────────────────────────────────────────────────────
 
+/**
+ * The four figures, however untidy the data is.
+ *
+ * `achievements.label` went without a unique constraint for a while, so a
+ * database that saw the migration more than once holds the same figure several
+ * times over and the band renders "30 Clientele" four times across. The repair
+ * migration fixes the rows, but the band should not depend on anyone having
+ * run it: one cell per label, in order, capped at four.
+ *
+ * Four is the design, not an arbitrary limit — the row is a single flex line
+ * with hairline rules between the cells, and a fifth figure makes each one too
+ * narrow to read on a laptop.
+ */
+function distinctFigures(achievements: Achievement[]): Achievement[] {
+  const seen = new Set<string>();
+  const unique: Achievement[] = [];
+
+  for (const achievement of achievements) {
+    const key = achievement.label.trim().toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(achievement);
+  }
+
+  return unique.slice(0, 4);
+}
+
 export function AchievementsBand({ achievements }: { achievements: Achievement[] }) {
-  if (achievements.length === 0) return null;
+  const figures = distinctFigures(achievements);
+  if (figures.length === 0) return null;
 
   /**
    * v1's achievements card, matched.
@@ -79,7 +107,7 @@ export function AchievementsBand({ achievements }: { achievements: Achievement[]
           </h2>
 
           <div className="mt-8 flex flex-col items-stretch gap-y-6 md:flex-row">
-            {achievements.map((achievement, index) => (
+            {figures.map((achievement, index) => (
               <Fragment key={achievement.id}>
                 {index > 0 && (
                   <div

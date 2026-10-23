@@ -360,7 +360,7 @@ export default function SettingsPage() {
 
           <div className="flex items-start gap-3 rounded-card border border-surface-line bg-surface-sunken p-4">
             <Icon name="schedule" className="shrink-0 text-ink-muted" />
-            <p className="text-small text-ink-muted">
+            <p className="text-base text-ink-muted">
               Saved changes reach the public pages within a minute — the site caches each
               page and rebuilds it on the next visit after that.
             </p>
