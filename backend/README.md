@@ -126,6 +126,24 @@ either shape — `lib/paragraphs.ts` accepts an array, blank-line-separated text
 escaped newlines, or one unbroken blob, and always returns several paragraphs —
 so this migration removes a class of breakage rather than fixing a crash.
 
+### Pointing "Speak to us" at WhatsApp
+
+The calls to action open a WhatsApp chat with the firm. On a database created
+before this was added, the two settings will not exist:
+
+```bash
+psql "$DATABASE_URL" -f migrations/0006_whatsapp_contact.sql
+```
+
+`0006` adds `contact.whatsapp` and `contact.whatsapp_message`, both editable
+from Site settings → Contact. It uses `ON CONFLICT DO NOTHING`, so a number the
+firm has already changed from the dashboard is never overwritten by re-running
+it. `0001_init.sql` seeds the same two rows, so a fresh install does not need
+it.
+
+Until a number is set the buttons fall back to the contact section on the page,
+so there is no broken link in the meantime.
+
 ### If the API says `permission denied for table ...`
 
 ```

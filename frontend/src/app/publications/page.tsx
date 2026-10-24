@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
+import { whatsAppLink } from '@/lib/whatsapp';
 import { Footer } from '@/components/layout/Footer';
 import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
@@ -91,7 +92,7 @@ export default async function PublicationsPage({
         ]}
       />
 
-      <Header />
+      <Header whatsAppUrl={whatsAppLink(settings)} />
 
       <main id="main" className="pt-20 md:pt-24">
         {/* ── Masthead ─────────────────────────────────────────────────── */}

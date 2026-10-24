@@ -7,6 +7,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/cn';
+import { whatsAppLink } from '@/lib/whatsapp';
 import type { Industry, SiteSettings } from '@/lib/types';
 
 const SLIDE_MS = 6000;
@@ -92,6 +93,14 @@ export function HeroCarousel({
 
   const hero = settings.hero ?? {};
   const ctaLabel = typeof hero.cta_label === 'string' ? hero.cta_label : 'Speak to our team';
+
+  /*
+   * The hero's primary button goes wherever "Speak to us" goes — WhatsApp
+   * when a number is set, the contact section otherwise. Derived from the
+   * same settings the header uses, so the two can never point at different
+   * places.
+   */
+  const chatUrl = whatsAppLink(settings);
 
   return (
     <section
@@ -180,7 +189,13 @@ export function HeroCarousel({
                         active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6',
                       )}
                     >
-                      <Link href="/#contactUs" className="btn-secondary">
+                      <Link
+                        href={chatUrl ?? '/#contactUs'}
+                        {...(chatUrl
+                          ? { target: '_blank', rel: 'noopener noreferrer' }
+                          : {})}
+                        className="btn-secondary"
+                      >
                         <Icon name="forum" size="sm" />
                         {ctaLabel}
                       </Link>

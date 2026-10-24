@@ -156,6 +156,11 @@ INSERT INTO public.site_settings (key, value, value_type, group_name, label, des
   ('contact.phone',    '"+234 (0) 813-602-2316"'::jsonb,                      'string', 'contact',  'Phone',            NULL, true,  6),
   ('contact.email',    $txt$"M.aMustaphaattorneyatlaw@gmail.com"$txt$::jsonb,         'email',  'contact',  'Public email',     NULL, true,  7),
   ('contact.map_embed','null'::jsonb,                                         'url',    'contact',  'Google Maps embed',$txt$Optional iframe src for the contact map.$txt$, true, 8),
+  -- Where the "Speak to us" buttons go. Stored as a person would read it;
+  -- the frontend strips everything but the digits to build the wa.me link.
+  ('contact.whatsapp', $txt$"+234 701 576 2269"$txt$::jsonb,                  'string', 'contact',  'WhatsApp number',  $txt$Where the "Speak to us" buttons go. Include the country code. Spaces and brackets are ignored.$txt$, true, 9),
+  ('contact.whatsapp_message', $txt$"Hello, I would like to speak with M. A Mustapha & Co. about a legal matter."$txt$::jsonb,
+                                                                              'text',   'contact',  'WhatsApp opening message', $txt$Pre-filled in the chat so the enquirer only has to press send. Leave blank for an empty message.$txt$, true, 10),
 
   -- Socials
   ('social.facebook',  $txt$"https://facebook.com/neotericlp"$txt$::jsonb,            'url',    'social',   'Facebook',         NULL, true,  1),

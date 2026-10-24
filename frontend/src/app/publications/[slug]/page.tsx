@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { whatsAppLink } from '@/lib/whatsapp';
 import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
 import { Thumbnail } from '@/components/publications/Thumbnail';
@@ -56,6 +57,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
   const { publication, related, navigation } = detail;
   const settings = await apiGetSafe<SiteSettings>('/settings', {}, { revalidate: 600 });
+  const chatUrl = whatsAppLink(settings);
 
   /**
    * What to render as the article's content, in order of preference.
@@ -118,7 +120,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
   return (
     <>
-      <Header />
+      <Header whatsAppUrl={chatUrl} />
 
       <script
         type="application/ld+json"
@@ -238,9 +240,17 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     The full text is being added to the site. Please check back shortly, or
                     get in touch if you need it sooner.
                   </p>
-                  <Link href="/#contactUs" className="btn-primary mt-6">
+                  {/* "if you need it sooner" means the fastest route, which
+                      is WhatsApp when one is configured. */}
+                  <Link
+                    href={chatUrl ?? '/#contactUs'}
+                    {...(chatUrl
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                    className="btn-primary mt-6"
+                  >
                     Contact us
-                    <Icon name="arrow_forward" size="sm" />
+                    <Icon name={chatUrl ? 'chat' : 'arrow_forward'} size="sm" />
                   </Link>
                 </div>
               )}
@@ -333,8 +343,14 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     This publication is general commentary, not legal advice. For advice on
                     your own circumstances, please get in touch.
                   </p>
+                  {/* The same destination as every other "Speak to us":
+                      WhatsApp when a number is configured, the contact
+                      section otherwise. */}
                   <Link
-                    href="/#contactUs"
+                    href={chatUrl ?? '/#contactUs'}
+                    {...(chatUrl
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
                     className="btn btn-sm mt-4 bg-white/10 text-white border border-white/20 hover:bg-white/20"
                   >
                     Speak to our team

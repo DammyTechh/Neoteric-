@@ -28,6 +28,14 @@ import {
   useToast,
 } from './ui';
 
+/**
+ * The largest page the API will serve.
+ *
+ * `paginationSchema` on the backend caps `limit` at 100 and rejects anything
+ * above it, so this constant and that one must agree.
+ */
+const PAGE_SIZE = 100;
+
 /** A record as it comes back from the API — shape varies by collection. */
 type Record_ = { id: string; sortOrder: number } & Record<string, unknown>;
 
@@ -273,8 +281,33 @@ export function CollectionManager({ spec }: { spec: CollectionSpec }) {
     setError('');
 
     try {
-      const result = await api.list<Record_>(spec.path, { limit: 200 });
-      setItems(result.items);
+      /*
+       * Every record, fetched a page at a time.
+       *
+       * This list is not paginated in the interface: reordering moves a row
+       * against its neighbours and saves the whole order, so the component
+       * needs the complete collection in hand. It used to ask for `limit: 200`
+       * in one go, which the API rejects — `paginationSchema` caps `limit` at
+       * 100 — and every one of the six collection pages failed to load with
+       * "The submitted data is not valid".
+       *
+       * Asking for the maximum and following `hasNext` keeps that correct
+       * however large a collection grows, rather than trading one hard-coded
+       * number for another.
+       */
+      const all: Record_[] = [];
+      let page = 1;
+
+      // A stop so a misbehaving `hasNext` cannot spin forever.
+      for (let guard = 0; guard < 50; guard += 1) {
+        const result = await api.list<Record_>(spec.path, { page, limit: PAGE_SIZE });
+        all.push(...result.items);
+
+        if (!result.meta.hasNext || result.items.length === 0) break;
+        page += 1;
+      }
+
+      setItems(all);
     } catch (caught) {
       setError((caught as Error).message);
     } finally {

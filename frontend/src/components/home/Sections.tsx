@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
@@ -98,7 +97,19 @@ export function AchievementsBand({ achievements }: { achievements: Achievement[]
       aria-labelledby="achievements-heading"
     >
       <Reveal>
-        <div className="mx-auto w-full bg-surface p-8 shadow-deep md:w-10/12 md:p-12">
+        {/*
+          Rounded and shallow, so it reads as the same family of object as the
+          floating header rather than a slab the hero runs into. The padding is
+          what carried the height — the figures themselves are compact — so
+          most of it came out rather than shrinking the numerals.
+        */}
+        <div
+          className={cn(
+            'mx-auto w-full md:w-10/12',
+            'rounded-panel border border-surface-line bg-surface shadow-deep',
+            'px-6 py-7 md:px-10 md:py-8',
+          )}
+        >
           <h2
             id="achievements-heading"
             className="text-caption uppercase tracking-[0.4em] text-ink-muted"
@@ -106,29 +117,42 @@ export function AchievementsBand({ achievements }: { achievements: Achievement[]
             Achievements
           </h2>
 
-          <div className="mt-8 flex flex-col items-stretch gap-y-6 md:flex-row">
-            {figures.map((achievement, index) => (
-              <Fragment key={achievement.id}>
-                {index > 0 && (
-                  <div
-                    className="h-px w-full bg-surface-line md:mx-10 md:h-auto md:w-px"
-                    aria-hidden="true"
-                  />
-                )}
+          {/*
+            Two by two on a phone, four across from tablet up. Stacked in one
+            column the four figures ran to nearly 500px, which is most of a
+            phone screen for four numbers.
 
-                <div className="flex-1">
-                  <p className="text-h1 font-light leading-none text-secondary">
-                    {achievement.value}
-                    {achievement.suffix && (
-                      <span className="text-h3">{achievement.suffix}</span>
-                    )}
-                  </p>
-                  <p className="mt-2 font-semibold text-ink">{achievement.label}</p>
-                  {achievement.description && (
-                    <p className="mt-1 text-small text-ink-muted">{achievement.description}</p>
+            The rules between cells are borders on the cells themselves rather
+            than separate divider elements, so the grid stays one row of markup
+            per figure and the two layouts cannot drift apart.
+          */}
+          <div className="mt-6 grid grid-cols-2 md:grid-cols-4">
+            {figures.map((achievement, index) => (
+              <div
+                key={achievement.id}
+                className={cn(
+                  'px-4 py-4 first:pl-0 md:px-6 md:py-0',
+                  // A rule to the left of every cell except the first in its row.
+                  index % 2 === 1 && 'border-l border-surface-line',
+                  index > 0 && 'md:border-l md:border-surface-line',
+                  // On a phone the second pair needs a rule above it; on a
+                  // single row there is nothing above to separate.
+                  index >= 2 && 'border-t border-surface-line md:border-t-0',
+                  // The grid's own padding handles the outer edges.
+                  index === 2 && 'pl-0 md:pl-6',
+                )}
+              >
+                <p className="text-h2 font-light leading-none text-secondary">
+                  {achievement.value}
+                  {achievement.suffix && (
+                    <span className="text-h4">{achievement.suffix}</span>
                   )}
-                </div>
-              </Fragment>
+                </p>
+                <p className="mt-1.5 font-semibold text-ink">{achievement.label}</p>
+                {achievement.description && (
+                  <p className="mt-1 text-small text-ink-muted">{achievement.description}</p>
+                )}
+              </div>
             ))}
           </div>
         </div>

@@ -224,3 +224,70 @@ never while the mobile menu is open, which would leave the links floating.
 
 Scrolling is read inside a `requestAnimationFrame`, and one handler drives both
 this and the glass/solid state so the two cannot disagree.
+
+## Pagination limits
+
+`paginationSchema` on the backend caps `limit` at 100 and rejects anything
+above it with "The submitted data is not valid". The six collection pages are
+not paginated in the interface — reordering moves a row against its neighbours
+and saves the whole order, so `CollectionManager` needs the full collection —
+so it asks for 100 at a time and follows `meta.hasNext` until the collection
+is exhausted.
+
+Asking for more than 100 in a single request fails. `PAGE_SIZE` in
+`components/admin/CollectionManager.tsx` and the cap in the backend's
+`paginationSchema` must agree.
+
+## The Who We Are photographs
+
+Built by `scripts/enhance-about-images.py` from the highest-resolution assets
+the firm owns, cropped to the 5:4 frame at 1200x960 so the browser never has
+to enlarge anything:
+
+| Frame | Source | Paragraph |
+|---|---|---|
+| `about-1.jpg` | `about/img3.jpg` | the law |
+| `about-2.jpg` | `team/Ese.jpg` | the practice |
+| `about-3.jpg` | `industries/infrastructure2.jpg` | modern working |
+| `about-4.jpg` | `industries/trade2.jpeg` | commercial goals |
+
+The originals in `about/` are 375-396px on the long edge for three of the
+four, which is why they looked soft: the browser was enlarging them past twice
+their native size. No amount of sharpening recovers detail that was never
+captured, so the sources were changed instead.
+
+Only one of the four is a portrait, and it is a robed advocate rather than a
+head-shot, so the section reads as the firm describing itself rather than a
+second copy of Our Team further down the page.
+
+These are the best the project's own assets allow: the originals in `about/`
+are 375-396px on the long edge for three of the four, and no amount of
+sharpening recovers detail that was never captured. Genuinely better
+photography is uploaded through the media library and selected in Site
+settings → About → images, with no code change.
+
+## "Speak to us" and WhatsApp
+
+Every "Speak to us" button opens a WhatsApp conversation with the firm. The
+number is a site setting, so it is changed from Site settings → Contact
+without a deploy:
+
+| Key | What it does |
+|---|---|
+| `contact.whatsapp` | the number the buttons dial |
+| `contact.whatsapp_message` | the text the chat opens with |
+
+`lib/whatsapp.ts` turns the setting into a `wa.me` link. The number is stored
+the way a person reads it — `+234 701 576 2269` — because that is what whoever
+edits it expects to see, and the digits are extracted there. A number written
+locally as `0701 576 2269` is the same number, so a leading zero is swapped for
+the country code rather than being passed through, which would produce a dead
+link.
+
+**When no usable number is set, the buttons fall back to the contact section**
+on the page rather than opening an empty WhatsApp. That is why `whatsAppLink`
+returns `null` instead of a best guess: a button that opens a chat with nobody
+is worse than one that scrolls.
+
+The nav item and footer link labelled "Contact us" still go to the contact
+section. Only the "Speak to us" calls to action go to WhatsApp.

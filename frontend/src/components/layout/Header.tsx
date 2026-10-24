@@ -39,7 +39,16 @@ const NAV_LINKS = [
  * section is in view rather than against the URL hash, since the hash does
  * not change as someone scrolls past a section.
  */
-export function Header() {
+export function Header({ whatsAppUrl }: { whatsAppUrl?: string | null }) {
+  /*
+   * "Speak to us" opens WhatsApp when a number is configured, and otherwise
+   * falls back to the contact section on the page. A button that opens an
+   * empty WhatsApp is worse than one that scrolls — so the fallback is the
+   * behaviour whenever the setting is blank or unusable.
+   */
+  const ctaHref = whatsAppUrl ?? '/#contactUs';
+  const ctaExternal = Boolean(whatsAppUrl);
+
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -214,7 +223,10 @@ export function Header() {
 
             {/* ── Call to action ─────────────────────────────────────────── */}
             <Link
-              href="/#contactUs"
+              href={ctaHref}
+              {...(ctaExternal
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
               className={cn(
                 'ml-auto hidden shrink-0 items-center gap-2 rounded-full px-5 py-2.5 sm:inline-flex lg:ml-2',
                 'text-small font-medium xl:text-base',
@@ -223,7 +235,7 @@ export function Header() {
                 'hover:-translate-y-0.5 hover:bg-secondary-500 hover:shadow-lift',
               )}
             >
-              <Icon name="forum" size="sm" />
+              <Icon name={ctaExternal ? 'chat' : 'forum'} size="sm" />
               Speak to us
             </Link>
 
@@ -298,10 +310,13 @@ export function Header() {
 
           <div className="border-t border-surface-line p-3">
             <Link
-              href="/#contactUs"
+              href={ctaHref}
+              {...(ctaExternal
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-secondary px-5 py-3 text-base font-medium text-white shadow-float transition-colors hover:bg-secondary-500"
             >
-              <Icon name="forum" size="sm" />
+              <Icon name={ctaExternal ? 'chat' : 'forum'} size="sm" />
               Speak to our team
             </Link>
           </div>

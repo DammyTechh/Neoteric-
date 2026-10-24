@@ -1,4 +1,5 @@
 import { Header } from '@/components/layout/Header';
+import { whatsAppLink } from '@/lib/whatsapp';
 import { Footer } from '@/components/layout/Footer';
 import { HeroCarousel } from '@/components/home/HeroCarousel';
 import { WhoWeAreSection } from '@/components/home/WhoWeAre';
@@ -56,7 +57,7 @@ export default async function HomePage() {
         team={data.team}
       />
 
-      <Header />
+      <Header whatsAppUrl={whatsAppLink(data.settings)} />
 
       <main id="main">
         <HeroCarousel industries={data.industries} settings={data.settings} />
