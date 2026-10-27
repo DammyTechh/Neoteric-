@@ -15,6 +15,7 @@ import { CrudService } from './crud.service';
 import { env } from '@shared/config/env';
 import { AppError } from '@shared/errors/AppError';
 import { createLogger } from '@shared/logger';
+import { runInBackground } from '@shared/utils/background';
 import type { InquiryStatus, RequestContext, UUID } from '@shared/types/common';
 import type { IMailer } from '@domain/services';
 
@@ -86,7 +87,7 @@ export class InquiryService extends CrudService<ContactInquiry, InquiryFilters> 
       return { reference, message: 'Thank you. Your message has been received.' };
     }
 
-    void this.dispatchNotifications(inquiry);
+    runInBackground(this.dispatchNotifications(inquiry), 'inquiry notifications');
 
     log.info({ reference, email: data.email }, 'inquiry received');
 

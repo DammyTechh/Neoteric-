@@ -13,6 +13,7 @@ import {
 import { env } from '@shared/config/env';
 import { AppError } from '@shared/errors/AppError';
 import { createLogger } from '@shared/logger';
+import { runInBackground } from '@shared/utils/background';
 import { generateToken, hashPassword, hashToken, verifyPassword } from '@shared/utils/crypto';
 import type { AdminRole, AuthenticatedActor, RequestContext, UUID } from '@shared/types/common';
 import type { IMailer } from '@domain/services';
@@ -123,16 +124,19 @@ export class AuthService {
     const tokens = await this.issueTokens(user, context);
 
     // Advisory only — a failed alert must not block a valid sign-in.
-    void this.mailer.sendQuietly({
-      to: user.email,
-      ...adminLoginAlert({
-        fullName: user.fullName,
-        ipAddress: context.ipAddress ?? null,
-        userAgent: context.userAgent ?? null,
+    runInBackground(
+      this.mailer.sendQuietly({
+        to: user.email,
+        ...adminLoginAlert({
+          fullName: user.fullName,
+          ipAddress: context.ipAddress ?? null,
+          userAgent: context.userAgent ?? null,
+        }),
+        template: 'admin.login-alert',
+        metadata: { userId: user.id },
       }),
-      template: 'admin.login-alert',
-      metadata: { userId: user.id },
-    });
+      'login alert',
+    );
 
     log.info({ userId: user.id, email: user.email }, 'login succeeded');
 

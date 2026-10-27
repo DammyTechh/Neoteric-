@@ -1,7 +1,7 @@
 {
   "name": "@neoteric/api",
   "version": "2.0.0",
-  "description": "Neoteric LP \u2014 v2 backend API. Node.js + TypeScript + Supabase (PostgreSQL), clean architecture.",
+  "description": "Neoteric LP — v2 backend API. Node.js + TypeScript + Supabase (PostgreSQL), clean architecture.",
   "license": "UNLICENSED",
   "private": true,
   "main": "dist/server.js",
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
+    "@vercel/functions": "^3.10.4",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",

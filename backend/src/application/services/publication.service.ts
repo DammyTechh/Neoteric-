@@ -12,6 +12,7 @@ import type {
 import type { NewsletterService } from './newsletter.service';
 import { AppError } from '@shared/errors/AppError';
 import { createLogger } from '@shared/logger';
+import { runInBackground } from '@shared/utils/background';
 import { deriveExcerpt, sanitizeArticleHtml } from '@shared/utils/sanitize';
 import type { Paginated, PaginationParams, RequestContext, UUID } from '@shared/types/common';
 
@@ -81,7 +82,10 @@ export class PublicationService extends CrudService<Publication, PublicationFilt
     ]);
 
     if (countView) {
-      void this.publications.incrementViewCount(publication.id).catch(() => undefined);
+      runInBackground(
+        this.publications.incrementViewCount(publication.id).catch(() => undefined),
+        'view count',
+      );
     }
 
     return {
@@ -115,7 +119,7 @@ export class PublicationService extends CrudService<Publication, PublicationFilt
     const createdRow = await super.create(payload, context);
 
     if (createdRow.status === 'published') {
-      void this.announce(createdRow);
+      runInBackground(this.announce(createdRow), 'publication announcement');
     }
 
     return createdRow;
@@ -135,7 +139,7 @@ export class PublicationService extends CrudService<Publication, PublicationFilt
     // Announce only on the draft → published transition, so re-saving a
     // published article does not email the list again.
     if (before.status !== 'published' && after.status === 'published') {
-      void this.announce(after);
+      runInBackground(this.announce(after), 'publication announcement');
     }
 
     return after;
@@ -292,7 +296,7 @@ export class PublicationService extends CrudService<Publication, PublicationFilt
 
     for (const publication of published) {
       log.info({ id: publication.id, slug: publication.slug }, 'scheduled article published');
-      void this.announce(publication);
+      runInBackground(this.announce(publication), 'publication announcement');
     }
 
     return published.length;

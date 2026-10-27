@@ -8,8 +8,26 @@ import type { ApiFailure, ApiSuccess, PaginationMeta } from './types';
  * so there is exactly one unwrapper to maintain rather than one per call site.
  */
 
+/** Where the backend actually lives, e.g. https://neoteric-api.vercel.app/api/v1 */
+const BACKEND_API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1'
+).replace(/\/$/, '');
+
+/**
+ * Server-side code calls the backend directly. The browser calls this site's
+ * own `/api/v1/...` path instead, which next.config.mjs proxies to the
+ * backend.
+ *
+ * The proxy is what keeps the admin session working when the frontend and
+ * backend are deployed on different domains (two Vercel projects): the
+ * refresh token is an httpOnly SameSite=strict cookie, and a browser only
+ * sends that to the site that set it. Going through the same origin makes it
+ * a first-party cookie, and it also removes the need for CORS in the browser.
+ */
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
+  typeof window === 'undefined'
+    ? BACKEND_API_URL
+    : `${window.location.origin}${new URL(BACKEND_API_URL).pathname.replace(/\/$/, '')}`;
 
 /** A failed request, carrying the backend's stable error code. */
 export class ApiError extends Error {
